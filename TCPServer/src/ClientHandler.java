@@ -1,12 +1,15 @@
 
+import Util.Debug;
 import models.Response;
 import models.User;
+import rmi.StorageServerInterface;
 
 import java.io.EOFException;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
+import java.rmi.RemoteException;
 
 /**
  * Created by danielgek on 07/10/15.
@@ -17,14 +20,19 @@ public class ClientHandler extends Thread {
     private ObjectOutputStream out;
     private ObjectInputStream in;
 
+    private TCPServer tcpServer;
+    private StorageServerInterface storageServer;
 
-    public ClientHandler(Socket socket) {
+
+    public ClientHandler(Socket socket, StorageServerInterface storageServer, TCPServer tcpServer) {
         this.socket = socket;
+        this.tcpServer = tcpServer;
+        this.storageServer = storageServer;
         try{
             this.out = new ObjectOutputStream(this.socket.getOutputStream());
             this.in = new ObjectInputStream(this.socket.getInputStream());
         }catch (IOException e){
-            System.out.println("Error on Client Contructor:" + e);
+            Debug.m("Error on Client Contructor:" + e);
         }
 
         this.start();
@@ -35,23 +43,40 @@ public class ClientHandler extends Thread {
 
         try{
             while(true){
-                User user = (User) in.readObject();
-                Response response = new RequestHandler().register(user);
-                out.writeObject(response);
-                /*if(response.isSuccess()){
-                    out.writeObject(new Response(true, "SignedUp with success!"));
-                }else{
-                    out.writeObject(new Response(true, "SignedUp with success!"));
+                Action action = (Action) in.readObject();
+                Response response = null;
+                switch (action.getAction()){
+                    case Action.SIGUP:
+                        response = this.storageServer.register((User) action.getObject());
+                        break;
+                    case Action.LOGIN:
+                        response = this.storageServer.login((User) action.getObject());
+                        break;
                 }
+                out.writeObject(response);
 
-                out.writeUTF(response);*/
             }
         }catch(EOFException e){
-            System.out.println("Error on Client run method EOF:" + e.getMessage());
+            Debug.m("Error on Client run method EOF:" + e.getMessage());
+            try {
+                tcpServer.setupRMI();
+            } catch (InterruptedException e1) {
+                e1.printStackTrace();
+            }
         }catch(IOException e){
-            System.out.println("Error on Client run method IO:" + e);
+            Debug.m("Error on Client run method IO:" + e.getMessage());
+            try {
+                tcpServer.setupRMI();
+            } catch (InterruptedException e1) {
+                e1.printStackTrace();
+            }
         } catch (ClassNotFoundException e) {
-            e.printStackTrace();
+            Debug.m("Error on Client run method ClassNotFound" + e.getMessage());
+            try {
+                tcpServer.setupRMI();
+            } catch (InterruptedException e1) {
+                e1.printStackTrace();
+            }
         }
 
     }

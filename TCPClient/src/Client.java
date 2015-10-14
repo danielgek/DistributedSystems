@@ -4,6 +4,7 @@ import java.net.UnknownHostException;
 import java.util.Scanner;
 import models.User;
 
+
 /**
  * Created by danielgek on 07/10/15.
  */
@@ -54,11 +55,14 @@ public class Client {
                     String username = scanner.nextLine();
                     System.out.println("Please insert Password: ");
                     String password = scanner.nextLine();
+
                     try {
-                        out.writeObject(new User(username,password));
+                        out.writeObject(new Action(Action.SIGUP,new User(username,password)));
                     } catch (IOException e) {
                         e.printStackTrace();
                     }
+
+                    menu();
                     break;
             }
         }
