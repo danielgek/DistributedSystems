@@ -6,7 +6,7 @@ package Util;
 public class Debug {
     private static boolean enabled = true;
 
-    public static void message(String message){
+    public static void m(String message){
         if (enabled){
             System.out.println(message);
         }
