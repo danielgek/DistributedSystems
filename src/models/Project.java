@@ -8,7 +8,7 @@ import java.util.Date;
  */
 public class Project implements Serializable {
 
-    private int id;
+    private int id = -1;
     private int adminId;
     private String name;
     private String description;
@@ -78,5 +78,17 @@ public class Project implements Serializable {
 
     public void setLimit(Date limit) {
         this.limit = limit;
+    }
+
+    @Override
+    public String toString() {
+        return "Project{" +
+                "id=" + id +
+                ", adminId=" + adminId +
+                ", name='" + name + '\'' +
+                ", description='" + description + '\'' +
+                ", objective=" + objective +
+                ", limit=" + limit +
+                '}';
     }
 }

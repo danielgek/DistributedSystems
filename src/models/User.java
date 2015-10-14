@@ -7,7 +7,7 @@ import java.io.Serializable;
  */
 public class User implements Serializable {
 
-    private int id;
+    private int id = -1;
     private String username;
     private String password;
     private double balance;

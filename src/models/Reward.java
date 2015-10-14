@@ -7,7 +7,7 @@ import java.io.Serializable;
  */
 public class Reward implements Serializable {
 
-    private int id;
+    private int id = -1;
     private int projectId;
     private String description;
     private double value;
