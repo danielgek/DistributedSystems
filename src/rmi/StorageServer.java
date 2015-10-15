@@ -3,6 +3,7 @@ package rmi;
 
 
 import Util.Debug;
+import Util.Util;
 import models.*;
 
 import java.rmi.RemoteException;
@@ -74,13 +75,15 @@ public class StorageServer extends UnicastRemoteObject implements StorageServerI
             rs = statement.executeQuery("SELECT * FROM users WHERE user = '" + user.getUsername() +"';");
             if(rs.next()){ // se nao esta vazio
                 rs.first();// busca o primeiro
-                if(user.getUsername() == rs.getString("user")){
+                if(user.getUsername().equals(rs.getString("user"))){
                     return new Response(false, "That username is allreaddy in use! pls register with another username!");
                 }
             }
 
 
             statement.executeUpdate("INSERT INTO users (user,pass,balance) VALUES ('" + user.getUsername() + "', '" + user.getPassword() + "' , 100)");
+
+            //cleanSql(rs, statement);
             return new Response(true, "Registered successfuly");
 
         }
@@ -89,21 +92,8 @@ public class StorageServer extends UnicastRemoteObject implements StorageServerI
             Debug.m("SQLException: " + ex.getMessage());
             Debug.m("SQLState: " + ex.getSQLState());
             Debug.m("VendorError: " + ex.getErrorCode());
+            //cleanSql(rs, statement);
             return new Response(false, "Error on inserting on database");
-        }
-        finally {
-            // cleaning stuff
-            if (rs != null) {
-                try {rs.close();} catch (SQLException sqlEx) { } // ignore
-
-                rs = null;
-            }
-
-            if (statement != null) {
-                try {statement.close();} catch (SQLException sqlEx) { } // ignore
-
-                statement = null;
-            }
         }
     }
 
@@ -111,14 +101,21 @@ public class StorageServer extends UnicastRemoteObject implements StorageServerI
     public Response login(User user) throws RemoteException {
         Debug.m("Starting Login" + user.toString());
         try {
-
-            rs = statement.executeQuery("SELECT * FROM users WHERE username = '" + user.getUsername() + "' AND password = '" + user.getPassword() + "';");
+            Debug.m("SELECT * FROM users WHERE user = '" + user.getUsername() + "' AND pass = '" + user.getPassword() + "';");
+            rs = statement.executeQuery("SELECT * FROM users WHERE user = '" + user.getUsername() + "' AND pass = '" + user.getPassword() + "';");
             rs.first();
-            if(user.getUsername() == rs.getString("user")){
-                return new Response(true, "Logged in successfuly");
+            Debug.m(rs.getString("user"));
+            if(user.getUsername().equals(rs.getString("user"))  && user.getPassword().equals(rs.getString("pass"))){
+                Debug.m(rs.getString("user"));
+                //cleanSql(rs, statement);
+                user.setBalance(rs.getDouble("balance"));
+                user.setId(rs.getInt("id"));
+                return new Response(true, "Logged in successfuly", user);
             }else{
-                return new Response(false, "User cardentials wrong!");
+                //cleanSql(rs, statement);
+                return new Response(false, "User cardentials wrong!" ,null);
             }
+
 
 
         }
@@ -127,21 +124,8 @@ public class StorageServer extends UnicastRemoteObject implements StorageServerI
             Debug.m("SQLException: " + ex.getMessage());
             Debug.m("SQLState: " + ex.getSQLState());
             Debug.m("VendorError: " + ex.getErrorCode());
+            //cleanSql(rs, statement);
             return new Response(false, "Error on login on database");
-        }
-        finally {
-            // cleaning stuff
-            if (rs != null) {
-                try {rs.close();} catch (SQLException sqlEx) { } // ignore
-
-                rs = null;
-            }
-
-            if (statement != null) {
-                try {statement.close();} catch (SQLException sqlEx) { } // ignore
-
-                statement = null;
-            }
         }
     }
 
@@ -152,27 +136,29 @@ public class StorageServer extends UnicastRemoteObject implements StorageServerI
 
         try {
 
-            statement.executeUpdate("INSERT INTO projects (id_admin, title, description, objective, limit)" +
+
+            statement.executeUpdate("INSERT INTO projects (id_admin, title, description, objective, limite)" +
                     "VALUES" +
                     "(" + project.getAdminId() + ", '" +
                     project.getName() + "', '" +
                     project.getDescription() + "', " +
                     project.getObjective() + ", '" +
-                    project.getLimit() + "');");
+                    Util.convertFromJAVADateToSQLDate(project.getLimit()) + "');", Statement.RETURN_GENERATED_KEYS);
 
             rs=statement.getGeneratedKeys();
 
+
+
             Response response = new Response(true, "Project inserted successfully!");
 
-            if (rs.next()){
-                response.setObject(new Project(
-                        rs.getInt(1),
-                        rs.getInt(2),
-                        rs.getString(3),
-                        rs.getString(4),
-                        rs.getDouble(5),
-                        rs.getDate(6)));
+            if (rs.first()){
+
+                //Debug.m(rs.getString("GENERATED_KEY"));
+                project.setId(rs.getInt("GENERATED_KEY"));
+                response.setObject(project);
             }
+
+            Debug.m(response.toString());
 
             return response;
         }
@@ -181,21 +167,8 @@ public class StorageServer extends UnicastRemoteObject implements StorageServerI
             Debug.m("SQLException: " + ex.getMessage());
             Debug.m("SQLState: " + ex.getSQLState());
             Debug.m("VendorError: " + ex.getErrorCode());
+            //cleanSql(rs, statement);
             return new Response(false, "Error on Project insertion");
-        }
-        finally {
-            // cleaning stuff
-            if (rs != null) {
-                try {rs.close();} catch (SQLException sqlEx) { } // ignore
-
-                rs = null;
-            }
-
-            if (statement != null) {
-                try {statement.close();} catch (SQLException sqlEx) { } // ignore
-
-                statement = null;
-            }
         }
     }
 
@@ -215,11 +188,66 @@ public class StorageServer extends UnicastRemoteObject implements StorageServerI
                         rs.getDouble(5),
                         rs.getDate(6)));
             }
-
+            //cleanSql(rs, statement);
             return response;
 
         } catch (SQLException e) {
             return new Response(false, "Can't find that project!");
+        }
+    }
+
+    @Override
+    public Response getProjectByAdmin(int id) throws RemoteException {
+        try {
+            rs = statement.executeQuery("SELECT * FROM projects WHERE id_admin = " + id + ";");
+
+            Response response = new Response(true, "There is your project!");
+
+            ArrayList<Project> projects = new ArrayList<>();
+            while(rs.next()){
+                projects.add(new Project(
+                        rs.getInt(1),
+                        rs.getInt(2),
+                        rs.getString(3),
+                        rs.getString(4),
+                        rs.getDouble(5),
+                        rs.getDate(6)));
+            }
+
+            response.setObject(projects);
+            //cleanSql(rs, statement);
+            return response;
+
+        } catch (SQLException e) {
+            return new Response(false, "Can't find that project!");
+        }
+    }
+
+    @Override
+    public Response getProjects() throws RemoteException {
+        try {
+            rs = statement.executeQuery("SELECT * FROM projects;");
+
+            Response response = new Response(true, "There is your project!");
+
+            ArrayList<Project> projects = new ArrayList<>();
+            while(rs.next()){
+                projects.add(new Project(
+                        rs.getInt(1),
+                        rs.getInt(2),
+                        rs.getString(3),
+                        rs.getString(4),
+                        rs.getDouble(5),
+                        rs.getDate(6)));
+            }
+            Debug.m(projects.size()+"");
+
+            response.setObject(projects);
+            //cleanSql(rs, statement);
+            return response;
+
+        } catch (SQLException e) {
+            return new Response(false, "Can't find any project!");
         }
     }
 
@@ -246,7 +274,7 @@ public class StorageServer extends UnicastRemoteObject implements StorageServerI
                         rs.getString(3),
                         rs.getDouble(4)));
             }
-
+            //cleanSql(rs, statement);
             return response;
         }
         catch (SQLException ex){
@@ -254,22 +282,10 @@ public class StorageServer extends UnicastRemoteObject implements StorageServerI
             Debug.m("SQLException: " + ex.getMessage());
             Debug.m("SQLState: " + ex.getSQLState());
             Debug.m("VendorError: " + ex.getErrorCode());
+            //cleanSql(rs, statement);
             return new Response(false, "Error on Reward insertion");
         }
-        finally {
-            // cleaning stuff
-            if (rs != null) {
-                try {rs.close();} catch (SQLException sqlEx) { } // ignore
 
-                rs = null;
-            }
-
-            if (statement != null) {
-                try {statement.close();} catch (SQLException sqlEx) { } // ignore
-
-                statement = null;
-            }
-        }
     }
 
     @Override
@@ -515,6 +531,23 @@ public class StorageServer extends UnicastRemoteObject implements StorageServerI
 
         } catch (SQLException e) {
             return new Response(false, "Can't find any votes!");
+        }
+    }
+
+
+
+    public static void cleanSql(ResultSet resultSet, Statement statement){
+
+        if (resultSet != null) {
+            try {resultSet.close();} catch (SQLException sqlEx) { } // ignore
+
+            resultSet = null;
+        }
+
+        if (statement != null) {
+            try {statement.close();} catch (SQLException sqlEx) { } // ignore
+
+            statement = null;
         }
     }
 }

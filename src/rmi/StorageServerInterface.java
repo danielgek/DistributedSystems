@@ -14,6 +14,8 @@ public interface StorageServerInterface extends Remote{
     Response login(User user) throws RemoteException;
     Response createProject(Project project) throws RemoteException;
     Response getProject(int id) throws RemoteException;
+    Response getProjectByAdmin(int id) throws RemoteException;
+    Response getProjects() throws RemoteException;
     Response createReward(Reward reward) throws RemoteException;
     Response getRewards(int projectId) throws RemoteException;
     Response createLevel(Level level) throws RemoteException;
