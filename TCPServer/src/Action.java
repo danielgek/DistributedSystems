@@ -8,7 +8,9 @@ public class Action implements Serializable {
     public final static int LOGIN = 0;
     public final static int SIGUP = 1;
     public final static int GET_PROJECT = 2;
-    public final static int CREATE_PROJECT = 3;
+    public final static int GET_PROJECTS = 3;
+    public final static int CREATE_PROJECT = 4;
+    public final static int GET_PROJECT_BY_ADMIN = 5;
     private Object object;
 
     public Action(int action) {
@@ -34,5 +36,13 @@ public class Action implements Serializable {
 
     public void setObject(Object object) {
         this.object = object;
+    }
+
+    @Override
+    public String toString() {
+        return "Action{" +
+                "action=" + action +
+                ", object=" + (object == null ? "null" : object.toString()) +
+                '}';
     }
 }
