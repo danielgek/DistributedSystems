@@ -1,5 +1,6 @@
 
 import Util.Debug;
+import models.Project;
 import models.Response;
 import models.User;
 import rmi.StorageServerInterface;
@@ -44,6 +45,7 @@ public class ClientHandler extends Thread {
         try{
             while(true){
                 Action action = (Action) in.readObject();
+                Debug.m(action.toString());
                 Response response = null;
                 switch (action.getAction()){
                     case Action.SIGUP:
@@ -51,27 +53,34 @@ public class ClientHandler extends Thread {
                         break;
                     case Action.LOGIN:
                         response = this.storageServer.login((User) action.getObject());
+                        Debug.m(response.toString());
+                        break;
+                    case Action.CREATE_PROJECT:
+                        response = this.storageServer.createProject((Project) action.getObject());
+                        Debug.m(response.toString());
+                        break;
+                    case Action.GET_PROJECT:
+                        response = this.storageServer.getProject((Integer) action.getObject());
+                        Debug.m(response.toString());
+                        break;
+                    case Action.GET_PROJECTS:
+                        response = this.storageServer.getProjects();
+                        Debug.m(response.toString());
+                        break;
+                    case Action.GET_PROJECT_BY_ADMIN:
+                        response = this.storageServer.getProjectByAdmin((Integer) action.getObject());
+                        Debug.m(response.toString());
                         break;
                 }
+
+
+
                 out.writeObject(response);
 
             }
-        }catch(EOFException e){
-            Debug.m("Error on Client run method EOF:" + e.getMessage());
-            try {
-                tcpServer.setupRMI();
-            } catch (InterruptedException e1) {
-                e1.printStackTrace();
-            }
-        }catch(IOException e){
-            Debug.m("Error on Client run method IO:" + e.getMessage());
-            try {
-                tcpServer.setupRMI();
-            } catch (InterruptedException e1) {
-                e1.printStackTrace();
-            }
-        } catch (ClassNotFoundException e) {
-            Debug.m("Error on Client run method ClassNotFound" + e.getMessage());
+        }catch(Exception e){
+            Debug.m("Error on Client run method" + e.getMessage());
+            e.printStackTrace();
             try {
                 tcpServer.setupRMI();
             } catch (InterruptedException e1) {
