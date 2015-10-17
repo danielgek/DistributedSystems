@@ -4,6 +4,7 @@ import java.sql.Date;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.ArrayList;
 import java.util.Scanner;
 
 /**
@@ -36,6 +37,33 @@ public class Util {
         return i;
 
     }
+    public static int readInt(){
+        int i;
+        Scanner sc = new Scanner(System.in);
+        try {
+            i = sc.nextInt();
+
+        } catch (Exception e) {
+            System.out.println("Invalid option, insert again: ");
+            return readInt();
+        }
+        return i;
+
+    }
+
+    public static double readDouble(){
+        double i;
+        Scanner sc = new Scanner(System.in);
+        try {
+            i = sc.nextDouble();
+
+        } catch (Exception e) {
+            System.out.println("Invalid value, insert again: ");
+            return readDouble();
+        }
+        return i;
+
+    }
 
     public static String readString(){
         String out;
@@ -48,6 +76,40 @@ public class Util {
             out=readString();
         }
         return out;
+    }
+
+    public static String readString(String s){
+        String out;
+        try {
+            Scanner sc = new Scanner(System.in);
+            out = sc.nextLine();
+
+
+        } catch (Exception e) {
+
+            out=readString();
+        }
+        return out;
+    }
+    public static String readStringWithOptions(ArrayList<String> optionStrings ){
+
+        String temp = readString();
+        boolean verification = false;
+        String option = "";
+        for (int i = 0; i < optionStrings.size(); i++) {
+            if(temp.equals(optionStrings.get(i))){
+                verification = true;
+                option = optionStrings.get(i);
+            }
+
+        }
+
+        if(verification){
+            return option;
+        }else{
+            System.out.println("Invalid Options!!");
+            return readStringWithOptions(optionStrings);
+        }
     }
 
 }
