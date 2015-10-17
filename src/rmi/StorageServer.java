@@ -260,18 +260,15 @@ public class StorageServer extends UnicastRemoteObject implements StorageServerI
                     "VALUES" +
                     "(" + reward.getProjectId() + ", '" +
                     reward.getDescription() + "', " +
-                    reward.getValue() + ");");
+                    reward.getValue() + ");", Statement.RETURN_GENERATED_KEYS);
 
             rs=statement.getGeneratedKeys();
 
             Response response = new Response(true, "Reward inserted successfully!");
 
             if (rs.next()){
-                response.setObject(new Reward(
-                        rs.getInt(1),
-                        rs.getInt(2),
-                        rs.getString(3),
-                        rs.getDouble(4)));
+                reward.setId(rs.getInt("GENERATED_KEY"));
+                response.setObject(reward);
             }
             //cleanSql(rs, statement);
             return response;
@@ -321,18 +318,15 @@ public class StorageServer extends UnicastRemoteObject implements StorageServerI
                     "VALUES" +
                     "(" + level.getIdProject() + ", '" +
                     level.getDescription() + "', " +
-                    level.getGoal() + ");");
+                    level.getGoal() + ");", Statement.RETURN_GENERATED_KEYS);
 
             rs=statement.getGeneratedKeys();
 
             Response response = new Response(true,"Level inserted successfully!");
 
             if (rs.next()){
-                response.setObject(new Level(
-                        rs.getInt(1),
-                        rs.getInt(2),
-                        rs.getString(3),
-                        rs.getInt(4)));
+                level.setId(rs.getInt("GENERATED_KEY"));
+                response.setObject(level);
             }
 
             return response;
@@ -396,20 +390,15 @@ public class StorageServer extends UnicastRemoteObject implements StorageServerI
                     poll.getDescription() + "', " +
                     poll.getIdProject() + ", '" +
                     poll.getAnswer1() + "', '" +
-                    poll.getAnswer1() + "');");
+                    poll.getAnswer1() + "');", Statement.RETURN_GENERATED_KEYS);
 
             rs=statement.getGeneratedKeys();
 
             Response response = new Response(true,"Poll inserted successfully!");
 
             if (rs.next()){
-                response.setObject(new Poll(
-                        rs.getInt("id"),
-                        rs.getString("title"),
-                        rs.getString("description"),
-                        rs.getInt("id_project"),
-                        rs.getString("answer1"),
-                        rs.getString("answer2")));
+                poll.setId(rs.getInt("GENERATED_KEY"));
+                response.setObject(poll);
             }
 
             return response;
@@ -485,17 +474,15 @@ public class StorageServer extends UnicastRemoteObject implements StorageServerI
             statement.executeUpdate("INSERT INTO votes ( id_poll, answer_index)" +
                     "VALUES" +
                     "(" + vote.getIdPoll() + ", " +
-                    vote.getOption() + ");");
+                    vote.getOption() + ");", Statement.RETURN_GENERATED_KEYS);
 
             rs=statement.getGeneratedKeys();
 
             Response response = new Response(true,"Vote inserted successfully!");
 
             if (rs.next()){
-                response.setObject(new Vote(
-                        rs.getInt("id"),
-                        rs.getInt("id_poll"),
-                        rs.getInt("answer_index")));
+                vote.setId(rs.getInt("GENERATED_KEY"));
+                response.setObject(vote);
             }
 
             return response;
