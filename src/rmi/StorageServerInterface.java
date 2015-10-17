@@ -16,12 +16,16 @@ public interface StorageServerInterface extends Remote{
     Response getProject(int id) throws RemoteException;
     Response getProjectByAdmin(int id) throws RemoteException;
     Response getProjects() throws RemoteException;
-    Response createReward(Reward reward) throws RemoteException;
+    Response addReward(Reward reward) throws RemoteException;
     Response getRewards(int projectId) throws RemoteException;
-    Response createLevel(Level level) throws RemoteException;
+    Response addLevel(Level object) throws RemoteException;
     Response getLevels(int projectId) throws RemoteException;
-    Response createPoll(Poll poll) throws RemoteException;
+    Response addPoll(Poll poll) throws RemoteException;
     Response getPolls(int projectId) throws RemoteException;
-    Response createVote(Vote vote) throws RemoteException;
+    Response getPoll(int pollId) throws RemoteException;
+    Response addVote(Vote vote) throws RemoteException;
     Response getVotes(int pollId) throws RemoteException;
+
+
+
 }
