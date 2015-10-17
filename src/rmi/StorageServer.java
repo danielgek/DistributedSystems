@@ -192,6 +192,8 @@ public class StorageServer extends UnicastRemoteObject implements StorageServerI
             return response;
 
         } catch (SQLException e) {
+            Debug.m(e.getMessage());
+            e.printStackTrace();
             return new Response(false, "Can't find that project!");
         }
     }
@@ -251,7 +253,7 @@ public class StorageServer extends UnicastRemoteObject implements StorageServerI
     }
 
     @Override
-    public Response createReward(Reward reward) throws RemoteException {
+    public Response addReward(Reward reward) throws RemoteException {
         Debug.m("Creating reward! " + reward.toString());
 
         try {
@@ -309,7 +311,7 @@ public class StorageServer extends UnicastRemoteObject implements StorageServerI
     }
 
     @Override
-    public Response createLevel(Level level) throws RemoteException {
+    public Response addLevel(Level level) throws RemoteException {
         Debug.m("Creating level! " + level.toString());
 
         try {
@@ -337,20 +339,7 @@ public class StorageServer extends UnicastRemoteObject implements StorageServerI
             Debug.m("SQLState: " + ex.getSQLState());
             Debug.m("VendorError: " + ex.getErrorCode());
             return new Response(false, "Error on Level insertion");
-        }
-        finally {
-            // cleaning stuff
-            if (rs != null) {
-                try {rs.close();} catch (SQLException sqlEx) { } // ignore
 
-                rs = null;
-            }
-
-            if (statement != null) {
-                try {statement.close();} catch (SQLException sqlEx) { } // ignore
-
-                statement = null;
-            }
         }
     }
 
@@ -374,12 +363,14 @@ public class StorageServer extends UnicastRemoteObject implements StorageServerI
             return response;
 
         } catch (SQLException e) {
+            Debug.m(e.getMessage());
+            e.printStackTrace();
             return new Response(false, "Can't find that level!");
         }
     }
 
     @Override
-    public Response createPoll(Poll poll) throws RemoteException {
+    public Response addPoll(Poll poll) throws RemoteException {
         Debug.m("Creating poll! " + poll.toString());
 
         try {
@@ -466,7 +457,7 @@ public class StorageServer extends UnicastRemoteObject implements StorageServerI
     }
 
     @Override
-    public Response createVote(Vote vote) throws RemoteException {
+    public Response addVote(Vote vote) throws RemoteException {
         Debug.m("Creating vote! " + vote.toString());
 
         try {
@@ -530,8 +521,6 @@ public class StorageServer extends UnicastRemoteObject implements StorageServerI
             return new Response(false, "Can't find any votes!");
         }
     }
-
-
 
     public static void cleanSql(ResultSet resultSet, Statement statement){
 
