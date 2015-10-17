@@ -56,4 +56,14 @@ public class Reward implements Serializable {
     public void setValue(double value) {
         this.value = value;
     }
+
+    @Override
+    public String toString() {
+        return "Reward{" +
+                "id=" + id +
+                ", projectId=" + projectId +
+                ", description='" + description + '\'' +
+                ", value=" + value +
+                '}';
+    }
 }
