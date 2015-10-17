@@ -7,18 +7,18 @@ import java.io.Serializable;
  */
 public class Level implements Serializable {
     private int id;
-    private float goal;
+    private double goal;
     private String description;
     private int idProject;
 
-    public Level(int id, float goal, String description, int idProject) {
+    public Level(int id, double goal, String description, int idProject) {
         this.id = id;
         this.goal = goal;
         this.description = description;
         this.idProject = idProject;
     }
 
-    public Level(float goal, String description, int idProject) {
+    public Level(double goal, String description, int idProject) {
         this.goal = goal;
         this.description = description;
         this.idProject = idProject;
@@ -32,11 +32,11 @@ public class Level implements Serializable {
         this.id = id;
     }
 
-    public float getGoal() {
+    public double getGoal() {
         return goal;
     }
 
-    public void setGoal(float goal) {
+    public void setGoal(double goal) {
         this.goal = goal;
     }
 
