@@ -421,19 +421,32 @@ public class StorageServer extends UnicastRemoteObject implements StorageServerI
             Debug.m("VendorError: " + ex.getErrorCode());
             return new Response(false, "Error on Poll insertion");
         }
-        finally {
-            // cleaning stuff
-            if (rs != null) {
-                try {rs.close();} catch (SQLException sqlEx) { } // ignore
 
-                rs = null;
+    }
+
+    @Override
+    public Response getPoll(int pollId) throws RemoteException {
+        try {
+            rs = statement.executeQuery("SELECT * FROM polls WHERE id = " + pollId);
+
+            Response response = new Response(true, "There is your poll!");
+
+
+            if (rs.next()){
+                response.setObject(new Poll(
+                        rs.getInt("id"),
+                        rs.getString("title"),
+                        rs.getString("description"),
+                        rs.getInt("id_project"),
+                        rs.getString("answer1"),
+                        rs.getString("answer2")));
             }
 
-            if (statement != null) {
-                try {statement.close();} catch (SQLException sqlEx) { } // ignore
 
-                statement = null;
-            }
+            return response;
+
+        } catch (SQLException e) {
+            return new Response(false, "Can't find that poll!");
         }
     }
 
