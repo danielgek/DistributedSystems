@@ -1,9 +1,11 @@
 package models;
 
+import java.io.Serializable;
+
 /**
  * Created by danielgek on 12/10/15.
  */
-public class Poll {
+public class Poll implements Serializable {
     private int id = -1;
     private String title;
     private String description;
