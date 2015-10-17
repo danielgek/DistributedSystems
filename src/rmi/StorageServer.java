@@ -240,7 +240,6 @@ public class StorageServer extends UnicastRemoteObject implements StorageServerI
                         rs.getDouble(5),
                         rs.getDate(6)));
             }
-            Debug.m(projects.size()+"");
 
             response.setObject(projects);
             //cleanSql(rs, statement);
@@ -495,37 +494,35 @@ public class StorageServer extends UnicastRemoteObject implements StorageServerI
             Debug.m("VendorError: " + ex.getErrorCode());
             return new Response(false, "Error on Vote insertion");
         }
-        finally {
-            // cleaning stuff
-            if (rs != null) {
-                try {rs.close();} catch (SQLException sqlEx) { } // ignore
 
-                rs = null;
-            }
-
-            if (statement != null) {
-                try {statement.close();} catch (SQLException sqlEx) { } // ignore
-
-                statement = null;
-            }
-        }
     }
 
     @Override
     public Response getVotes(int pollId) throws RemoteException {
         try {
-            rs = statement.executeQuery("SELECT * FROM votes WHERE id_poll = " + pollId);
+            int answerACount = 0;
+            int answerBCount = 0;
+            rs = statement.executeQuery("SELECT COUNT(id) AS ANSWER_A FROM votes WHERE id_poll = " + pollId + " AND answer_index = 1" );
+            if(rs.next()){
+                answerACount = rs.getInt("ANSWER_A");
+            }else {
+                // no Votes in Anser A
+            }
+
+            rs = statement.executeQuery("SELECT COUNT(id) AS ANSWER_B FROM votes WHERE id_poll = " + pollId + " AND answer_index = 2" );
+            if(rs.next()){
+                answerBCount = rs.getInt("ANSWER_B");
+            }else {
+                // no Votes in Anser A
+            }
+
+
+
 
             Response response = new Response(true, "There is your votes!");
 
-            ArrayList<Vote> votes = new ArrayList<>();
-            while(rs.next()){
-                votes.add(new Vote(
-                        rs.getInt("id"),
-                        rs.getInt("id_poll"),
-                        rs.getInt("answer_index")));
-            }
-            response.setObject(votes);
+
+            response.setObject(new PollResult(answerACount,answerBCount));
 
             return response;
 
