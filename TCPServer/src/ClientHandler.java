@@ -1,8 +1,6 @@
 
 import Util.Debug;
-import models.Project;
-import models.Response;
-import models.User;
+import models.*;
 import rmi.StorageServerInterface;
 
 import java.io.EOFException;
@@ -69,6 +67,42 @@ public class ClientHandler extends Thread {
                         break;
                     case Action.GET_PROJECT_BY_ADMIN:
                         response = this.storageServer.getProjectByAdmin((Integer) action.getObject());
+                        Debug.m(response.toString());
+                        break;
+                    case Action.ADD_LEVEL:
+                        response = this.storageServer.addLevel((Level) action.getObject());
+                        Debug.m(response.toString());
+                        break;
+                    case Action.GET_LEVELS_BY_PROJECT:
+                        response = this.storageServer.getLevels((Integer) action.getObject());
+                        Debug.m(response.toString());
+                        break;
+                    case Action.ADD_POLL:
+                        response = this.storageServer.addPoll((Poll) action.getObject());
+                        Debug.m(response.toString());
+                        break;
+                    case Action.GET_POLL:
+                        response = this.storageServer.getPoll((Integer) action.getObject());
+                        Debug.m(response.toString());
+                        break;
+                    case Action.GET_POLL_BY_PROJECT:
+                        response = this.storageServer.getPolls((Integer) action.getObject());
+                        Debug.m(response.toString());
+                        break;
+                    case Action.ADD_REWARD:
+                        response = this.storageServer.addReward((Reward) action.getObject());
+                        Debug.m(response.toString());
+                        break;
+                    case Action.GET_REWARDS_BY_PROJECT:
+                        response = this.storageServer.getRewards((Integer) action.getObject());
+                        Debug.m(response.toString());
+                        break;
+                    case Action.ADD_VOTE:
+                        response = this.storageServer.addVote((Vote) action.getObject());
+                        Debug.m(response.toString());
+                        break;
+                    case Action.GET_VOTES_BY_POLL:
+                        response = this.storageServer.getVotes((Integer) action.getObject());
                         Debug.m(response.toString());
                         break;
                 }
