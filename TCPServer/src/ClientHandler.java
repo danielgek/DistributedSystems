@@ -65,8 +65,16 @@ public class ClientHandler extends Thread {
                         response = this.storageServer.getProjects();
                         Debug.m(response.toString());
                         break;
+                    case Action.GET_OLD_PROJECTS:
+                        response = this.storageServer.getOldProjects();
+                        Debug.m(response.toString());
+                        break;
                     case Action.GET_PROJECT_BY_ADMIN:
                         response = this.storageServer.getProjectByAdmin((Integer) action.getObject());
+                        Debug.m(response.toString());
+                        break;
+                    case Action.REMOVE_PROJECT:
+                        response = this.storageServer.removeProject((Integer) action.getObject());
                         Debug.m(response.toString());
                         break;
                     case Action.ADD_LEVEL:
@@ -93,8 +101,16 @@ public class ClientHandler extends Thread {
                         response = this.storageServer.addReward((Reward) action.getObject());
                         Debug.m(response.toString());
                         break;
+                    case Action.REMOVE_REWARD:
+                        response = this.storageServer.removeReward((Integer) action.getObject());
+                        Debug.m(response.toString());
+                        break;
                     case Action.GET_REWARDS_BY_PROJECT:
                         response = this.storageServer.getRewards((Integer) action.getObject());
+                        Debug.m(response.toString());
+                        break;
+                    case Action.GET_CURRENT_REWARDS:
+                        response = this.storageServer.getCurrentRewards((Integer) action.getObject());
                         Debug.m(response.toString());
                         break;
                     case Action.ADD_VOTE:
@@ -105,6 +121,22 @@ public class ClientHandler extends Thread {
                         response = this.storageServer.getVotes((Integer) action.getObject());
                         Debug.m(response.toString());
                         break;
+                    case Action.PLEDGE:
+                        response = this.storageServer.pledge((Pledge) action.getObject());
+                        Debug.m(response.toString());
+                        break;
+                    case Action.GET_USER:
+                        response = this.storageServer.getUser((Integer) action.getObject());
+                        Debug.m(response.toString());
+                        break;
+                    case Action.SEND_MESSAGE:
+                        response = this.storageServer.sendMessage((Message) action.getObject());
+                        Debug.m(response.toString());
+                        break;
+                    case Action.GET_MESSAGES:
+                        response = this.storageServer.getMessagesByProject((Integer) action.getObject());
+                        Debug.m(response.toString());
+                        break;
                 }
 
 
@@ -112,15 +144,25 @@ public class ClientHandler extends Thread {
                 out.writeObject(response);
 
             }
-        }catch(Exception e){
-            Debug.m("Error on Client run method" + e.getMessage());
+        } catch (ClassNotFoundException e) {
+            Debug.m("Error on ClientHandler ClassNotFoundException: " + e.getMessage());
             e.printStackTrace();
+        } catch (RemoteException e) {
+            Debug.m("Error on ClientHandler RemoteException: " + e.getMessage());
             try {
                 tcpServer.setupRMI();
             } catch (InterruptedException e1) {
                 e1.printStackTrace();
             }
+        } catch (IOException e) {
+
+            Debug.m("Error on ClientHandler IOException: " + e.getMessage());
+            e.printStackTrace();
         }
+
+
+
+
 
     }
 }
