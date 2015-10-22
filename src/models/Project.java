@@ -13,6 +13,7 @@ public class Project implements Serializable {
     private String name;
     private String description;
     private double objective;
+    private double progress;
     private Date limit;
 
     public Project(int id, int adminId, String name, String description, double objective, Date limit) {
@@ -22,6 +23,17 @@ public class Project implements Serializable {
         this.description = description;
         this.objective = objective;
         this.limit = limit;
+        this.progress = 0;
+    }
+
+    public Project(int id, int adminId, String name, String description, double objective, Date limit, double progress) {
+        this.id = id;
+        this.adminId = adminId;
+        this.name = name;
+        this.description = description;
+        this.objective = objective;
+        this.limit = limit;
+        this.progress = progress;
     }
 
     public Project(int adminId, String name, String description, double objective, Date limit) {
@@ -30,6 +42,7 @@ public class Project implements Serializable {
         this.description = description;
         this.objective = objective;
         this.limit = limit;
+        this.progress = 0;
     }
 
     public int getId() {
@@ -80,6 +93,14 @@ public class Project implements Serializable {
         this.limit = limit;
     }
 
+    public double getProgress() {
+        return progress;
+    }
+
+    public void setProgress(double progress) {
+        this.progress = progress;
+    }
+
     @Override
     public String toString() {
         return "Project{" +
@@ -88,6 +109,7 @@ public class Project implements Serializable {
                 ", name='" + name + '\'' +
                 ", description='" + description + '\'' +
                 ", objective=" + objective +
+                ", progress=" + progress +
                 ", limit=" + limit +
                 '}';
     }

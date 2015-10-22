@@ -175,20 +175,31 @@ public class StorageServer extends UnicastRemoteObject implements StorageServerI
     @Override
     public Response getProject(int id) throws RemoteException {
         try {
-            rs = statement.executeQuery("SELECT * FROM projects WHERE id = " + id + ";");
+            rs = statement.executeQuery("SELECT * FROM projects WHERE id = " + id + " AND soft_deleted = 0;");
 
             Response response = new Response(true, "There is your project!");
 
+            Project project = null;
+
             if(rs.next()){
-                response.setObject(new Project(
+                project = new Project(
                         rs.getInt(1),
                         rs.getInt(2),
                         rs.getString(3),
                         rs.getString(4),
                         rs.getDouble(5),
-                        rs.getDate(6)));
+                        rs.getDate(6));
             }
-            //cleanSql(rs, statement);
+
+            rs = statement.executeQuery("SELECT SUM(amount) AS AMOUNT FROM pledges WHERE id_user = " + project.getAdminId() + " AND id_project = " + project.getId() + ";");
+            if(rs.next()){
+                project.setProgress(rs.getDouble("AMOUNT"));
+            }
+
+
+            response.setObject(project);
+
+
             return response;
 
         } catch (SQLException e) {
@@ -206,21 +217,34 @@ public class StorageServer extends UnicastRemoteObject implements StorageServerI
             Response response = new Response(true, "There is your project!");
 
             ArrayList<Project> projects = new ArrayList<>();
+            Project project;
             while(rs.next()){
-                projects.add(new Project(
+                project = new Project(
                         rs.getInt(1),
                         rs.getInt(2),
                         rs.getString(3),
                         rs.getString(4),
                         rs.getDouble(5),
-                        rs.getDate(6)));
+                        rs.getDate(6));
+
+                Statement statement1 = connection.createStatement();
+
+                ResultSet resultSet = statement1.executeQuery("SELECT SUM(amount) AS AMOUNT FROM pledges WHERE id_user = " + project.getAdminId() + " AND id_project = " + project.getId() + ";");
+                if(resultSet.next()){
+                    project.setProgress(resultSet.getDouble("AMOUNT"));
+                }
+                statement1.close();
+                resultSet.close();
+                projects.add(project);
+
             }
 
             response.setObject(projects);
-            //cleanSql(rs, statement);
             return response;
 
         } catch (SQLException e) {
+            Debug.m(e.getMessage());
+            e.printStackTrace();
             return new Response(false, "Can't find that project!");
         }
     }
@@ -228,23 +252,69 @@ public class StorageServer extends UnicastRemoteObject implements StorageServerI
     @Override
     public Response getProjects() throws RemoteException {
         try {
-            rs = statement.executeQuery("SELECT * FROM projects;");
+            rs = statement.executeQuery("SELECT * FROM projects WHERE limite > CURDATE() AND soft_deleted = 0;");
 
             Response response = new Response(true, "There is your project!");
 
             ArrayList<Project> projects = new ArrayList<>();
+            Project project = null;
             while(rs.next()){
-                projects.add(new Project(
+                project = new Project(
                         rs.getInt(1),
                         rs.getInt(2),
                         rs.getString(3),
                         rs.getString(4),
                         rs.getDouble(5),
-                        rs.getDate(6)));
+                        rs.getDate(6));
+
+                Statement statement1 = connection.createStatement();
+
+                ResultSet resultSet = statement1.executeQuery("SELECT SUM(amount) AS AMOUNT FROM pledges WHERE id_user = " + project.getAdminId() + " AND id_project = " + project.getId() + ";");
+                if(resultSet.next()){
+                    project.setProgress(resultSet.getDouble("AMOUNT"));
+                }
+                statement1.close();
+                resultSet.close();
+                projects.add(project);
             }
 
             response.setObject(projects);
-            //cleanSql(rs, statement);
+            return response;
+
+        } catch (SQLException e) {
+            return new Response(false, "Can't find any project!");
+        }
+    }
+
+    public Response getOldProjects() throws RemoteException {
+        try {
+            rs = statement.executeQuery("SELECT * FROM projects WHERE limite < CURDATE() AND soft_deleted = 0;");
+
+            Response response = new Response(true, "There is your project!");
+
+            ArrayList<Project> projects = new ArrayList<>();
+            Project project = null;
+            while(rs.next()){
+                project = new Project(
+                        rs.getInt(1),
+                        rs.getInt(2),
+                        rs.getString(3),
+                        rs.getString(4),
+                        rs.getDouble(5),
+                        rs.getDate(6));
+
+                Statement statement1 = connection.createStatement();
+
+                ResultSet resultSet = statement1.executeQuery("SELECT SUM(amount) AS AMOUNT FROM pledges WHERE id_user = " + project.getAdminId() + " AND id_project = " + project.getId() + ";");
+                if(resultSet.next()){
+                    project.setProgress(resultSet.getDouble("AMOUNT"));
+                }
+                statement1.close();
+                resultSet.close();
+                projects.add(project);
+            }
+
+            response.setObject(projects);
             return response;
 
         } catch (SQLException e) {
