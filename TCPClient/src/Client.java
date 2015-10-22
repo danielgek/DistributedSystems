@@ -51,216 +51,282 @@ public class Client {
         System.out.println("+++++++++++++++++++++++++++++++");
         System.out.println("+ 1. Sigup                    +");
         System.out.println("+ 2. Login                    +");
+        System.out.println("+ 3. Exit                     +");
         System.out.println("+++++++++++++++++++++++++++++++");
 
+        int option = Util.readInt(3);
 
+        switch (option){
+            case 1:
+                System.out.println("Please insert Username: ");
+                String username = Util.readString();
+                System.out.println("Please insert Password: ");
+                String password = Util.readString();
 
-        Scanner scanner = new Scanner(System.in);
+                try {
+                    Debug.m("writing action");
+                    out.writeObject(new Action(Action.SIGUP,new User(username,password)));
 
-        while(scanner.hasNextInt()){
-            switch (scanner.nextInt()){
-                case 1:
-                    System.out.println("Please insert Username: ");
-                    String username = Util.readString();
-                    System.out.println("Please insert Password: ");
-                    String password = Util.readString();
+                    Response response = (Response) in.readObject();
+                    if(response.isSuccess()){
+                        System.out.println(response.getMessage() + "\nPlease login!");
 
-                    try {
-                        Debug.m("writing action");
-                        out.writeObject(new Action(Action.SIGUP,new User(username,password)));
-
-                        Response response = (Response) in.readObject();
-                        if(response.isSuccess()){
-                            System.out.println(response.getMessage() + "\nPlease login!");
-
-                        }else{
-                            System.out.println("Failed!\n" + response.getMessage());
-                        }
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    } catch (ClassNotFoundException e) {
-                        e.printStackTrace();
+                    }else{
+                        System.out.println("Failed!\n" + response.getMessage());
                     }
+                } catch (IOException e) {
+                    e.printStackTrace();
+                } catch (ClassNotFoundException e) {
+                    e.printStackTrace();
+                }
 
-                    menu();
-                    break;
-                case 2:
-                    System.out.println("Please insert Username: ");
-                    String usernameLogin = Util.readString();
-                    System.out.println("Please insert Password: ");
-                    String passwordLogin = Util.readString();
-                    try {
-                        out.writeObject(new Action(Action.LOGIN,new User(usernameLogin,passwordLogin)));
+                menu();
+                break;
+            case 2:
+                System.out.println("Please insert Username: ");
+                String usernameLogin = Util.readString();
+                System.out.println("Please insert Password: ");
+                String passwordLogin = Util.readString();
+                try {
+                    out.writeObject(new Action(Action.LOGIN,new User(usernameLogin,passwordLogin)));
 
-                        Response response = (Response) in.readObject();
-                        if(response.isSuccess()){
-                            System.out.println("\nLogged in!");
-                            this.user = (User) response.getObject();
-                            menuLogin();
-                        }else{
-                            System.out.println("Failed!\n" + response.getMessage());
-                        }
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    } catch (ClassNotFoundException e) {
-                        e.printStackTrace();
+                    Response response = (Response) in.readObject();
+                    if(response.isSuccess()){
+                        System.out.println("\nLogged in!");
+                        this.user = (User) response.getObject();
+                        menuLogin();
+                    }else{
+                        System.out.println("Failed!\n" + response.getMessage());
                     }
-                    break;
-            }
+                } catch (IOException e) {
+                    e.printStackTrace();
+                } catch (ClassNotFoundException e) {
+                    e.printStackTrace();
+                }
+                menu();
+                break;
+            case 3:
+                System.exit(0);
+                break;
         }
-
-
-
 
     }
 
     private void menuLogin(){
 
-        System.out.println("+++++++++++++++++++++++++++++++");
+        System.out.println("\n+++++++++++++++++++++++++++++++");
         System.out.println("+ 1. Create Project           +");
-        System.out.println("+ 2. View My Projects         +");
-        System.out.println("+ 3. View Projects            +");
+        System.out.println("+ 2. View My Current Projects +");
+        System.out.println("+ 3. View My Old Projects     +");
+        System.out.println("+ 4. View Projects            +");
+        System.out.println("+ 5. See Balance              +");
+        System.out.println("+ 6. Logout                   +");
         System.out.println("+++++++++++++++++++++++++++++++");
 
-        Scanner scanner = new Scanner(System.in);
-
-        while (scanner.hasNextInt()){
-            switch (scanner.nextInt()){
-                case 1 :
+        int option = Util.readInt(6);
+        switch (option){
+            case 1 :
 
 
-                    System.out.println("Insert project title: ");
-                    String title = Util.readString();
-                    System.out.println("Insert project description: ");
-                    String description = Util.readString();
-                    System.out.println("Insert project objective: ");
-                    double objective = scanner.nextDouble();
-                    System.out.println("Insert project final date(dd/mm/yyyy): ");
+                System.out.println("Insert project title: ");
+                String title = Util.readString();
+                System.out.println("Insert project description: ");
+                String description = Util.readString();
+                System.out.println("Insert project objective: ");
+                double objective = Util.readDouble();
+                System.out.println("Insert project final date(dd/mm/yyyy): ");
 
-                    boolean dateCheck = true;
-                    Date limit = null;
-                    while (dateCheck){
-                        try {
-                            limit = new Date(Util.readString());
-                            if(limit != null) dateCheck = false;
-                        } catch ( Exception e) {
-                            System.out.println("Date not recognized! \nPlease insert again: ");
-
-                        }
-                    }
-
+                boolean dateCheck = true;
+                Date limit = null;
+                while (dateCheck){
                     try {
-                        Project project = new Project(user.getId(), title,description,objective,limit);
+                        limit = new Date(Util.readString());
+                        if(limit != null) dateCheck = false;
+                    } catch ( Exception e) {
+                        System.out.println("Date not recognized! \nPlease insert again: ");
 
-                        out.writeObject(new Action(Action.CREATE_PROJECT, project));
+                    }
+                }
 
-                        Response response = (Response) in.readObject();
+                try {
+                    Project project = new Project(user.getId(), title,description,objective,limit);
+
+                    out.writeObject(new Action(Action.CREATE_PROJECT, project));
+
+                    Response response = (Response) in.readObject();
 
 
-                        if(response.isSuccess()){
-                            System.out.println("Project " + project.getName() + " created successfully!");
-                        }else{
-                            System.out.println("Erro! :" + response.getMessage());
-                        }
+                    if(response.isSuccess()){
+                        System.out.println("Project " + project.getName() + " created successfully!");
+                    }else{
+                        System.out.println("Erro! :" + response.getMessage());
+                    }
+                    menuLogin();
+                } catch (Exception e) {
+                    Debug.m("--"+e);
+                    e.printStackTrace();
+                }
+
+                try {
+                    Response response = (Response) in.readObject();
+                } catch (IOException e) {
+                    Debug.m(e.getMessage());
+                } catch (ClassNotFoundException e) {
+                    Debug.m(e.getMessage());
+                }
+
+
+
+
+                break;
+            case 2 :
+                try {
+                    out.writeObject(new Action(Action.GET_PROJECT_BY_ADMIN, user.getId()));
+
+                    Response response = (Response) in.readObject();
+
+                    Debug.m(response.getMessage());
+
+                    ArrayList<Project> projects = (ArrayList<Project>) response.getObject();
+
+
+
+                    for (int i = 1; i <= projects.size(); i++) {
+                        System.out.println(i + ". " + projects.get(i - 1).getName() + " Progress: " + projects.get(i - 1).getObjective() + "/" + projects.get(i - 1).getProgress());
+
+                    }
+                    if(projects.isEmpty()){
+                        System.out.print("You don't have any projects yet!");
                         menuLogin();
-                    } catch (Exception e) {
-                        Debug.m("--"+e);
-                        e.printStackTrace();
+                    }else {
+                        System.out.println("Choose one project to view details or 0 to go back");
                     }
 
-                    try {
-                        Response response = (Response) in.readObject();
-                    } catch (IOException e) {
-                        Debug.m(e.getMessage());
-                    } catch (ClassNotFoundException e) {
-                        Debug.m(e.getMessage());
-                    }
+                    int project = Util.readInt(projects.size());
 
-
-
-
-                    break;
-                case 2 :
-                    try {
-                        out.writeObject(new Action(Action.GET_PROJECT_BY_ADMIN, user.getId()));
-
-                        Response response = (Response) in.readObject();
-
-                        ArrayList<Project> projects = (ArrayList<Project>) response.getObject();
-
-
-
-                        for (int i = 1; i <= projects.size(); i++) {
-                            System.out.println(i + ". " + projects.get(i-1).getName());
-
-                        }
-                        if(projects.isEmpty()){
-                            System.out.print("You don't have any projects yet!");
-                            menuLogin();
-                        }else {
-                            System.out.println("Choose one project to view details or 0 to go back");
-                        }
-
-                        int option = Util.readInt(projects.size());
-
-                        if(option == 0){
-                            menuLogin();
-                        }else{
-                            showProject(projects.get(option-1).getId());
-                        }
-                        
-
-
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    } catch (ClassNotFoundException e) {
-                        e.printStackTrace();
+                    if(project == 0){
+                        menuLogin();
+                    }else{
+                        showProject(projects.get(project-1).getId());
                     }
 
 
-                    break;
-                case 3 :
-                    try {
-                        out.writeObject(new Action(Action.GET_PROJECTS));
 
-                        Response response = (Response) in.readObject();
-
-                        ArrayList<Project> projects = (ArrayList<Project>) response.getObject();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                } catch (ClassNotFoundException e) {
+                    e.printStackTrace();
+                }
 
 
+                break;
+            case 3 :
+                try {
+                    out.writeObject(new Action(Action.GET_OLD_PROJECTS, user.getId()));
 
-                        for (int i = 1; i <= projects.size(); i++) {
-                            System.out.println(i + ". " + projects.get(i-1).getName());
+                    Response response = (Response) in.readObject();
 
-                        }
-                        if(projects.isEmpty()){
-                            System.out.print("There are no projects yet!");
-                            menuLogin();
-                        }else {
-                            System.out.println("Choose one project to view details or 0 to go back");
-                        }
+                    Debug.m(response.getMessage());
 
-                        int option = Util.readInt(projects.size());
-
-                        if(option == 0){
-                            menuLogin();
-                        }else{
-                            showProject(projects.get(option-1).getId());
-                        }
+                    ArrayList<Project> projects = (ArrayList<Project>) response.getObject();
 
 
 
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    } catch (ClassNotFoundException e) {
-                        e.printStackTrace();
+                    for (int i = 1; i <= projects.size(); i++) {
+                        System.out.println(i + ". " + projects.get(i - 1).getName() + " Progress: " + projects.get(i - 1).getObjective() + "/" + projects.get(i - 1).getProgress());
+
+                    }
+                    if(projects.isEmpty()){
+                        System.out.print("You don't have any old projects yet!");
+                        menuLogin();
+                    }else {
+                        System.out.println("Choose one project to view details or 0 to go back");
+                    }
+
+                    int project = Util.readInt(projects.size());
+
+                    if(project == 0){
+                        menuLogin();
+                    }else{
+                        showProject(projects.get(project-1).getId());
                     }
 
 
-                    break;
-            }
+
+                } catch (IOException e) {
+                    e.printStackTrace();
+                } catch (ClassNotFoundException e) {
+                    e.printStackTrace();
+                }
+
+
+                break;
+            case 4 :
+                try {
+                    out.writeObject(new Action(Action.GET_PROJECTS));
+
+                    Response response = (Response) in.readObject();
+
+                    ArrayList<Project> projects = (ArrayList<Project>) response.getObject();
+
+
+
+                    for (int i = 1; i <= projects.size(); i++) {
+                        System.out.println(i + ". " + projects.get(i - 1).getName() + " Progress: " + projects.get(i - 1).getObjective() + "/" + projects.get(i - 1).getProgress());
+
+                    }
+                    if(projects.isEmpty()){
+                        System.out.print("There are no projects yet!");
+                        menuLogin();
+                    }else {
+                        System.out.println("Choose one project to view details or 0 to go back");
+                    }
+
+                    int project = Util.readInt(projects.size());
+
+                    if(project == 0){
+                        menuLogin();
+                    }else{
+                        showProject(projects.get(project-1).getId());
+                    }
+
+
+
+                } catch (IOException e) {
+                    e.printStackTrace();
+                } catch (ClassNotFoundException e) {
+                    e.printStackTrace();
+                }
+
+
+                break;
+            case 5:
+                try {
+                    out.writeObject(new Action(Action.GET_USER,user.getId()));
+                    User user = (User) ((Response) in.readObject()).getObject();
+                    this.user = user;
+                    System.out.println("Your user balance is: " + user.getBalance());
+
+                } catch (IOException e) {
+                    e.printStackTrace();
+                } catch (ClassNotFoundException e) {
+                    e.printStackTrace();
+                }
+
+                menuLogin();
+
+                menu();
+
+                break;
+            case 6:
+                user = null;
+
+                menu();
+
+                break;
         }
     }
+
 
     public void showProject(int projectId){
 
@@ -281,6 +347,7 @@ public class Client {
                 System.out.println("Description: " + project.getDescription());
                 System.out.println("Objective: " + project.getObjective());
                 System.out.println("Limit: " + project.getLimit().toString());
+                System.out.println("Progress: " + project.getProgress());
 
                 if(responseRewards.isSuccess()){
                     ArrayList<Reward> rewards = (ArrayList<Reward>) responseRewards.getObject();
@@ -352,36 +419,71 @@ public class Client {
                     System.out.println("You are the owner of the project!");
                     System.out.println("+++++++++++++++++++++++++++++++");
                     System.out.println("+ 1. Add Reward               +");
-                    System.out.println("+ 2. Add Level                +");
-                    System.out.println("+ 3. Add Poll                 +");
-                    System.out.println("+ 4. Vote                     +");
-                    System.out.println("+ 5. Back                     +");
+                    System.out.println("+ 2. Remove Rewards           +");
+                    System.out.println("+ 3. Add Level                +");
+                    System.out.println("+ 4. Add Poll                 +");
+                    System.out.println("+ 5. Delete Project           +");
+                    System.out.println("+ 6. View/Reply Messages      +");
+                    System.out.println("+ 7. Back                     +");
                     System.out.println("+++++++++++++++++++++++++++++++");
 
 
-                    int option = Util.readInt(3);
+                    int option = Util.readInt(7);
 
                     switch (option){
                         case 1:
                             addReward(project.getId());
                             break;
                         case 2:
-                            addLevel(project.getId());
+                            removeReward(projectId);
                             break;
                         case 3:
-                            addPoll(projectId);
+                            addLevel(project.getId());
                             break;
                         case 4:
-                            vote(projectId);
+                            addPoll(projectId);
                             break;
                         case 5:
+                            removeProject(projectId);
+                            break;
+                        case 6:
+                            menuMessages(projectId);
+                            break;
+                        case 7:
+                            menuLogin();
+                            break;
+                    }
+                }else{
+                    System.out.println("You are visiting a project from another one: ");
+
+                    System.out.println("+++++++++++++++++++++++++++++++");
+                    System.out.println("+ 1. Pledge                   +");
+                    System.out.println("+ 2. Vote                     +");
+                    System.out.println("+ 3. View/Reply Messages      +");
+                    System.out.println("+ 4. Back                     +");
+                    System.out.println("+++++++++++++++++++++++++++++++");
+
+
+                    int option = Util.readInt(4);
+
+                    switch (option){
+                        case 1:
+                            pledge(projectId);
+                            break;
+                        case 2:
+                            vote(projectId);
+                            break;
+                        case 3:
+                            menuMessages(projectId);
+                            break;
+                        case 4:
                             menuLogin();
                             break;
                     }
 
 
-
                 }
+
             }else{
                 System.out.println("Cant find project");
                 menuLogin();
@@ -393,6 +495,152 @@ public class Client {
         } catch (ClassNotFoundException e) {
             e.printStackTrace();
         }
+
+    }
+
+    private void menuMessages(int projectId) {
+        try {
+            out.writeObject(new Action(Action.GET_MESSAGES, projectId));
+            Response response = (Response) in.readObject();
+            if(response.isSuccess()){
+                ArrayList<Message> messages = (ArrayList<Message>) response.getObject();
+                if(!messages.isEmpty()){
+                    for (int i = 0; i < messages.size(); i++) {
+                        out.writeObject(new Action(Action.GET_USER, messages.get(i).getSender()));
+
+                        User user = (User) ((Response) in.readObject()).getObject();
+                        System.out.println("U: " + user.getUsername());
+                        System.out.println("M: " + messages.get(i).getMessage());
+                    }
+                }else{
+                    System.out.println("No messages yet!");
+                }
+            }else{
+                Debug.m("Error! " + response.getMessage());
+            }
+            System.out.println("+++++++++++++++++++++++++++++++");
+            System.out.println("+ 1. Send Message             +");
+            System.out.println("+ 2. Back                     +");
+            System.out.println("+++++++++++++++++++++++++++++++");
+            int option = Util.readInt(2);
+            switch (option){
+                case 1:
+                    System.out.println("Write your message");
+                    String message = Util.readString();
+                    out.writeObject(new Action(Action.SEND_MESSAGE, new Message(message,user.getId(),projectId)));
+                    Response responseSendMessage = (Response) in.readObject();
+                    if(responseSendMessage.isSuccess()){
+                        System.out.println("Sended Message!!");
+                        menuMessages(projectId);
+                    }else{
+                        System.out.println("Error sending message!! " + response.getMessage());
+                    }
+                    break;
+                case 2:showProject(projectId);break;
+            }
+        } catch (IOException e) {
+            Debug.m(e.getMessage());
+            e.printStackTrace();
+            showProject(projectId);
+        } catch (ClassNotFoundException e) {
+            Debug.m(e.getMessage());
+            e.printStackTrace();
+            showProject(projectId);
+        }
+    }
+
+    private void removeReward(int projectId) {
+
+        try {
+            out.writeObject(new Action(Action.GET_REWARDS_BY_PROJECT, projectId));
+            Response response = (Response) in.readObject();
+            if(response.isSuccess()){
+
+                ArrayList<Reward> rewards = (ArrayList<Reward>) response.getObject();
+
+                for (int i = 0; i < rewards.size(); i++) {
+                    System.out.println(rewards.get(i).getId() + ". " + rewards.get(i).getDescription());
+                }
+                System.out.println("Enter reward number to remove: ");
+                int option = Util.readInt();
+                boolean verification = false;
+                while (!verification){
+                    for (int i = 0; i < rewards.size(); i++) {
+                        if(option == rewards.get(i).getId()) verification = true;
+                    }
+                    if(!verification){
+                        System.out.println("Please enter a valid reward number!!");
+                        option = Util.readInt();
+                    }
+                }
+
+                out.writeObject(new Action(Action.REMOVE_REWARD, option));
+                Response responseRemove = (Response) in.readObject();
+                if (responseRemove.isSuccess()){
+                    System.out.println("Removed successfully!");
+                    showProject(projectId);
+                }else{
+                    System.out.println("Error removing reward!" + responseRemove.getMessage());
+                }
+
+            }
+        } catch (IOException e) {
+            Debug.m(e.getMessage());
+            e.printStackTrace();
+        } catch (ClassNotFoundException e) {
+            Debug.m(e.getMessage());
+            e.printStackTrace();
+        }
+    }
+
+    private void removeProject(int projectId) {
+        try {
+            out.writeObject(new Action(Action.REMOVE_PROJECT, projectId));
+            Response response = (Response) in.readObject();
+
+            if(response.isSuccess()){
+                System.out.println("Project removed successfully!");
+                out.writeObject(new Action(Action.GET_USER, user.getId()));
+                Response responseUser = (Response) in.readObject();
+                if (response.isSuccess()){
+                    this.user = (User) responseUser.getObject();
+                }
+
+            }else{
+                Debug.m("Error deleting project" + response.getMessage());
+            }
+
+        } catch (IOException e) {
+            Debug.m(e.getMessage());
+            e.printStackTrace();
+        } catch (ClassNotFoundException e) {
+            Debug.m(e.getMessage());
+            e.printStackTrace();
+        }
+    }
+
+    private void pledge(int projectId) {
+        System.out.println("Insert the Pledge amount: ");
+        double amount = Util.readDouble();
+        try {
+            out.writeObject(new Action(Action.PLEDGE, new Pledge(projectId,this.user.getId(),amount)));
+            Response response = (Response) in.readObject();
+            if(response.isSuccess()){
+                System.out.println("Pledged successfully!");
+            }
+            else{
+                if(response.getMessage().equals("You don't have enought money!!"))
+                    System.out.println("You don't have enought money!!");
+                Debug.m("Error in Pledge insertion: " +response.getMessage());
+            }
+        } catch (IOException e) {
+            Debug.m(e.getMessage());
+            e.printStackTrace();
+        } catch (ClassNotFoundException e) {
+            Debug.m(e.getMessage());
+            e.printStackTrace();
+        }
+        showProject(projectId);
 
     }
 
