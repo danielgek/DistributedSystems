@@ -69,7 +69,7 @@ public class StorageServer extends UnicastRemoteObject implements StorageServerI
 
     @Override
     public Response register(User user) throws RemoteException {
-        Debug.m("Start registering User" + user.toString());
+        Debug.m("Start registering User: " + user.toString());
         try {
 
             rs = statement.executeQuery("SELECT * FROM users WHERE user = '" + user.getUsername() +"';");
@@ -99,20 +99,19 @@ public class StorageServer extends UnicastRemoteObject implements StorageServerI
 
     @Override
     public Response login(User user) throws RemoteException {
-        Debug.m("Starting Login" + user.toString());
+        Debug.m("Starting Login: " + user.toString());
         try {
-            Debug.m("SELECT * FROM users WHERE user = '" + user.getUsername() + "' AND pass = '" + user.getPassword() + "';");
+
             rs = statement.executeQuery("SELECT * FROM users WHERE user = '" + user.getUsername() + "' AND pass = '" + user.getPassword() + "';");
             rs.first();
-            Debug.m(rs.getString("user"));
+
             if(user.getUsername().equals(rs.getString("user"))  && user.getPassword().equals(rs.getString("pass"))){
-                Debug.m(rs.getString("user"));
-                //cleanSql(rs, statement);
+
                 user.setBalance(rs.getDouble("balance"));
                 user.setId(rs.getInt("id"));
                 return new Response(true, "Logged in successfuly", user);
             }else{
-                //cleanSql(rs, statement);
+
                 return new Response(false, "User cardentials wrong!" ,null);
             }
 
@@ -186,6 +185,7 @@ public class StorageServer extends UnicastRemoteObject implements StorageServerI
 
                 //Debug.m(rs.getString("GENERATED_KEY"));
                 project.setId(rs.getInt("GENERATED_KEY"));
+                project.setProgress(0);
                 response.setObject(project);
             }
 
@@ -399,15 +399,15 @@ public class StorageServer extends UnicastRemoteObject implements StorageServerI
                 reward.setId(rs.getInt("GENERATED_KEY"));
                 response.setObject(reward);
             }
-            //cleanSql(rs, statement);
+
             return response;
         }
         catch (SQLException ex){
-            // handle any errors
+
             Debug.m("SQLException: " + ex.getMessage());
             Debug.m("SQLState: " + ex.getSQLState());
             Debug.m("VendorError: " + ex.getErrorCode());
-            //cleanSql(rs, statement);
+
             return new Response(false, "Error on Reward insertion");
         }
 
@@ -461,7 +461,7 @@ public class StorageServer extends UnicastRemoteObject implements StorageServerI
             return response;
         }
         catch (SQLException ex){
-            // handle any errors
+
             Debug.m("SQLException: " + ex.getMessage());
             Debug.m("SQLState: " + ex.getSQLState());
             Debug.m("VendorError: " + ex.getErrorCode());
@@ -522,7 +522,7 @@ public class StorageServer extends UnicastRemoteObject implements StorageServerI
             return response;
         }
         catch (SQLException ex){
-            // handle any errors
+
             Debug.m("SQLException: " + ex.getMessage());
             Debug.m("SQLState: " + ex.getSQLState());
             Debug.m("VendorError: " + ex.getErrorCode());
@@ -538,7 +538,6 @@ public class StorageServer extends UnicastRemoteObject implements StorageServerI
 
             Response response = new Response(true, "There is your poll!");
 
-
             if (rs.next()){
                 response.setObject(new Poll(
                         rs.getInt("id"),
@@ -548,7 +547,6 @@ public class StorageServer extends UnicastRemoteObject implements StorageServerI
                         rs.getString("answer1"),
                         rs.getString("answer2")));
             }
-
 
             return response;
 
@@ -606,7 +604,7 @@ public class StorageServer extends UnicastRemoteObject implements StorageServerI
             return response;
         }
         catch (SQLException ex){
-            // handle any errors
+
             Debug.m("SQLException: " + ex.getMessage());
             Debug.m("SQLState: " + ex.getSQLState());
             Debug.m("VendorError: " + ex.getErrorCode());
@@ -634,11 +632,7 @@ public class StorageServer extends UnicastRemoteObject implements StorageServerI
                 // no Votes in Anser A
             }
 
-
-
-
             Response response = new Response(true, "There is your votes!");
-
 
             response.setObject(new PollResult(answerACount,answerBCount));
 
