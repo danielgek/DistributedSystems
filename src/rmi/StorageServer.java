@@ -130,6 +130,37 @@ public class StorageServer extends UnicastRemoteObject implements StorageServerI
     }
 
     @Override
+    public Response getUser(int id) throws RemoteException {
+        Debug.m("getUser: " + id);
+        try {
+
+            rs = statement.executeQuery("SELECT * FROM users WHERE id = " + id + ";");
+
+
+            if(rs.next()){
+
+                User user = new User(rs.getInt("id"),rs.getString("user"),rs.getString("pass"),rs.getDouble("balance"));
+
+                return new Response(true, "There is your", user);
+
+            }else{
+
+                return new Response(false, "Cant't find any user with that id" ,null);
+
+            }
+
+        }
+        catch (SQLException ex){
+
+            Debug.m("SQLException: " + ex.getMessage());
+            Debug.m("SQLState: " + ex.getSQLState());
+            Debug.m("VendorError: " + ex.getErrorCode());
+
+            return new Response(false, "Error on geting user");
+        }
+    }
+
+    @Override
     public Response createProject(Project project) throws RemoteException {
 
         Debug.m("Creating project! " + project.toString());
@@ -319,6 +350,32 @@ public class StorageServer extends UnicastRemoteObject implements StorageServerI
 
         } catch (SQLException e) {
             return new Response(false, "Can't find any project!");
+        }
+    }
+
+    @Override
+    public Response removeProject(int id) throws RemoteException {
+        try {
+            statement.executeUpdate("UPDATE projects SET soft_deleted = 1 WHERE id = " + id);
+
+            rs = statement.executeQuery("SELECT * FROM pledges WHERE id_project = " + id);
+
+            ;
+
+
+            while(rs.next()){
+                Statement balanceStatement = connection.createStatement();
+                balanceStatement.executeUpdate("UPDATE users SET balance = balance + " + rs.getDouble("amount") + " WHERE id = " + rs.getInt("id_user"));
+            }
+
+
+
+            return new Response(true, "Project deleted successfully!");
+        } catch (SQLException e) {
+            Debug.m(e.getMessage());
+            e.printStackTrace();
+            return new Response(false, "Error on deleting project!");
+
         }
     }
 
