@@ -592,6 +592,83 @@ public class StorageServer extends UnicastRemoteObject implements StorageServerI
         }
     }
 
+    @Override
+    public Response pledge(Pledge pledge) throws RemoteException {
+        Debug.m("Creating vote! " + pledge.toString());
+
+        try {
+
+            double balanceUser = 0;
+
+            rs = statement.executeQuery("SELECT balance FROM users WHERE id = " + pledge.getUserId());
+
+            if(rs.next()){
+                balanceUser = rs.getDouble("balance");
+                if(pledge.getAmount() > balanceUser ){
+                    return new Response(false, "You don't have enought money!!");
+                }
+            }else {
+                return new Response(false, "Cant find user to insert pledge!!");
+            }
+
+
+            statement.executeUpdate("INSERT INTO pledges ( id_project, id_user, amount)" +
+                    "VALUES" +
+                    "(" + pledge.getProjectId() + ", " +
+                    pledge.getUserId() + ", " +
+                    pledge.getAmount() + ");", Statement.RETURN_GENERATED_KEYS);
+
+            balanceUser = balanceUser - pledge.getAmount();
+            statement.executeUpdate("UPDATE users set balance = " + balanceUser + " WHERE id = " + pledge.getUserId());
+
+            return new Response(true,"Pledged successfully!");
+        }
+        catch (SQLException ex){
+
+            Debug.m("SQLException: " + ex.getMessage());
+            Debug.m("SQLState: " + ex.getSQLState());
+            Debug.m("VendorError: " + ex.getErrorCode());
+            return new Response(false, "Error on Pledge insertion");
+        }
+    }
+
+
+    @Override
+    public Response sendMessage(Message message) throws RemoteException {
+
+        try {
+            statement.executeUpdate("INSERT INTO messages(message, sender, receiver) VALUES ('" + message.getMessage() + "', " + message.getSender() + ", " + message.getReceiver() + ");");
+            return new Response(true, "Message sended!");
+        } catch (SQLException e) {
+            Debug.m(e.getMessage());
+            e.printStackTrace();
+            return new Response(false, "Error sending message!");
+
+        }
+    }
+
+    @Override
+    public Response getMessagesByProject(int id) throws RemoteException {
+        try {
+            rs = statement.executeQuery("SELECT * FROM messages WHERE receiver = " +id);
+            ArrayList<Message> messages = new ArrayList<>();
+
+            while (rs.next()){
+                messages.add(new Message(rs.getInt("id"), rs.getString("message"),rs.getInt("sender"),rs.getInt("receiver")));
+
+            }
+            Response response = null;
+            if(! messages.isEmpty())
+                return new Response(true, "There are your things", messages);
+            else
+                return new Response(false, "There are no Messages for this project!");
+        } catch (SQLException e) {
+            Debug.m(e.getMessage());
+            e.printStackTrace();
+            return new Response(false, "Error getting Messages!");
+        }
+    }
+
     public static void cleanSql(ResultSet resultSet, Statement statement){
 
         if (resultSet != null) {
