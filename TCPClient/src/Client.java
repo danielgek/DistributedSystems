@@ -120,7 +120,8 @@ public class Client {
         System.out.println("+ 3. View My Old Projects     +");
         System.out.println("+ 4. View Projects            +");
         System.out.println("+ 5. See Balance              +");
-        System.out.println("+ 6. Logout                   +");
+        System.out.println("+ 6. See Rewards              +");
+        System.out.println("+ 7. Logout                   +");
         System.out.println("+++++++++++++++++++++++++++++++");
 
         int option = Util.readInt(6);
@@ -319,6 +320,37 @@ public class Client {
 
                 break;
             case 6:
+                try {
+                    out.writeObject(new Action(Action.GET_CURRENT_REWARDS, user.getId()));
+
+                    Response response = (Response) in.readObject();
+                    if(response.isSuccess()){
+                        ArrayList<CurrentRewardsResult> currentRewardsResults = (ArrayList<CurrentRewardsResult>) response.getObject();
+                        System.out.println("* * * * Your rewards:");
+                        for (int i = 0; i < currentRewardsResults.size(); i++) {
+                            System.out.println("* * Reward description: " + currentRewardsResults.get(i).getRewardsDescription());
+                            System.out.println("* * Reward value: " + currentRewardsResults.get(i).getRewardsValue());
+                            System.out.println("* * Projects title: " + currentRewardsResults.get(i).getProjectsTitle());
+                            System.out.println("* * Projects description: " + currentRewardsResults.get(i).getProjectsDescription());
+                        }
+                    }else{
+                        Debug.m(response.getMessage());
+                        System.out.println("You don't have any rewords");
+                    }
+
+
+
+
+
+
+                } catch (IOException e) {
+                    e.printStackTrace();
+                } catch (ClassNotFoundException e) {
+                    e.printStackTrace();
+                }
+                menuLogin();
+                break;
+            case 7:
                 user = null;
 
                 menu();

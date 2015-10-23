@@ -243,7 +243,7 @@ public class StorageServer extends UnicastRemoteObject implements StorageServerI
     @Override
     public Response getProjectByAdmin(int id) throws RemoteException {
         try {
-            rs = statement.executeQuery("SELECT * FROM projects WHERE id_admin = " + id + ";");
+            rs = statement.executeQuery("SELECT * FROM projects WHERE id_admin = " + id + " and soft_deleted = 0;");
 
             Response response = new Response(true, "There is your project!");
 
@@ -434,6 +434,65 @@ public class StorageServer extends UnicastRemoteObject implements StorageServerI
 
         } catch (SQLException e) {
             return new Response(false, "Can't find that reward!");
+        }
+    }
+
+    @Override
+    public Response getCurrentRewards(int userId) throws RemoteException {
+        try {
+            Debug.m("SELECT * FROM rewards, (Select * from projects ) projects, (SELECT * from pledges WHERE pledges.id_user = " + userId + ") pledges where projects.id =  rewards.id_project and projects.id = pledges.id_project and rewards.value <= pledges.amount;");
+
+            rs = statement.executeQuery("SELECT * FROM rewards, (Select * from projects WHERE soft_deleted = 0 ) projects, (SELECT * from pledges WHERE pledges.id_user = " + userId + ") pledges where projects.id =  rewards.id_project and projects.id = pledges.id_project and rewards.value <= pledges.amount;");
+            Debug.m("number" + rs.getFetchSize() + "");
+            ArrayList<CurrentRewardsResult> currentRewardsResults = new ArrayList<>();
+            while (rs.next()){
+                Debug.m("asd");
+                int rewardsId =  rs.getInt("rewards.id");
+                int rewardsIdProject =  rs.getInt("rewards.id_project");
+                String rewardsDescription =  rs.getString("rewards.description");
+                double rewardsValue =  rs.getDouble("rewards.value");
+                int projectsId =  rs.getInt("projects.id");
+                int projectsIdAdmin =  rs.getInt("projects.id_admin");
+                String projectsTitle =  rs.getString("projects.title");
+                String projectsDescription =  rs.getString("projects.description");
+                double projectsObjective =  rs.getDouble("projects.objective");
+                Date projectsLimite =  rs.getDate("projects.limite");
+                boolean projectsSoftDeleted =  rs.getBoolean("projects.soft_deleted");
+                int pledgesId =  rs.getInt("pledges.id");
+                int pledgesIdProject =  rs.getInt("pledges.id_project");
+                int pledgesIdUser =  rs.getInt("pledges.id_user");
+                double pledgesAmount =  rs.getDouble("pledges.amount");
+
+                CurrentRewardsResult currentRewardsResult = new CurrentRewardsResult(rewardsId,rewardsIdProject,rewardsDescription,rewardsValue,projectsId,projectsIdAdmin,projectsTitle,projectsDescription,projectsObjective,projectsLimite,projectsSoftDeleted,pledgesId,pledgesIdProject,pledgesIdUser,pledgesAmount);
+
+                currentRewardsResults.add(currentRewardsResult);
+            }
+            Debug.m(currentRewardsResults.toString());
+            Response response;
+            if (currentRewardsResults.isEmpty()) {
+                response = new Response(false, "You don't have any rewards!");
+            }else{
+                response = new Response(true, "There is your rewards!", currentRewardsResults);
+            }
+
+            return response;
+
+        } catch (SQLException e) {
+            Debug.m(e.getMessage());
+            return new Response(false, "Can't find that rewards!");
+        }
+    }
+
+    @Override
+    public Response removeReward(int id) throws RemoteException {
+        try {
+            statement.execute("DELETE FROM rewards WHERE id = " + id);
+            return new Response(true, "Removed successfully!");
+
+        } catch (SQLException e) {
+            Debug.m(e.getMessage());
+            e.printStackTrace();
+            return new Response(true, "Error deleting Reward");
         }
     }
 
