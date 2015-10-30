@@ -63,7 +63,7 @@ public class Action implements Serializable {
     public String toString() {
         return "Action{" +
                 "action=" + action +
-                ", object=" + (object == null ? "null" : object.toString()) +
+                ", object= " + (object == null ? "null" : object.toString()) +
                 '}';
     }
 }
