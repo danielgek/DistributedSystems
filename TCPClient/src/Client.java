@@ -22,27 +22,35 @@ public class Client {
     private ObjectInputStream in;
     private ObjectOutputStream out;
     private User user;
+    private String host;
 
     public Client(String host) {
 
 
+        this.host = host;
+
         try {
             // 1o passo
             socket = new Socket(host, serversocket);
+            socket.setSoTimeout(3000);
 
-            System.out.println("Ligado ao servidor TCP" + socket);
+            System.out.println("Ligado ao servidor TCP!!§");
             // 2o passo
             in = new ObjectInputStream(socket.getInputStream());
             out = new ObjectOutputStream(socket.getOutputStream());
 
 
 
+
         } catch (UnknownHostException e) {
-            System.out.println("Sock:" + e.getMessage());
+            Debug.m("Sock:" + e.getMessage());
+            handleConnectionError();
         } catch (EOFException e) {
-            System.out.println("EOF:" + e.getMessage());
+            Debug.m("EOF:" + e.getMessage());
+            handleConnectionError();
         } catch (IOException e) {
-            System.out.println("IO:" + e.getMessage());
+            Debug.m("IO:" + e.getMessage());
+            handleConnectionError();
         }
         menu();
     }
@@ -58,51 +66,12 @@ public class Client {
 
         switch (option){
             case 1:
-                System.out.println("Please insert Username: ");
-                String username = Util.readString();
-                System.out.println("Please insert Password: ");
-                String password = Util.readString();
 
-                try {
-                    Debug.m("writing action");
-                    out.writeObject(new Action(Action.SIGUP,new User(username,password)));
-
-                    Response response = (Response) in.readObject();
-                    if(response.isSuccess()){
-                        System.out.println(response.getMessage() + "\nPlease login!");
-
-                    }else{
-                        System.out.println("Failed!\n" + response.getMessage());
-                    }
-                } catch (IOException e) {
-                    e.printStackTrace();
-                } catch (ClassNotFoundException e) {
-                    e.printStackTrace();
-                }
-
+                register();
                 menu();
                 break;
             case 2:
-                System.out.println("Please insert Username: ");
-                String usernameLogin = Util.readString();
-                System.out.println("Please insert Password: ");
-                String passwordLogin = Util.readString();
-                try {
-                    out.writeObject(new Action(Action.LOGIN,new User(usernameLogin,passwordLogin)));
-
-                    Response response = (Response) in.readObject();
-                    if(response.isSuccess()){
-                        System.out.println("\nLogged in!");
-                        this.user = (User) response.getObject();
-                        menuLogin();
-                    }else{
-                        System.out.println("Failed!\n" + response.getMessage());
-                    }
-                } catch (IOException e) {
-                    e.printStackTrace();
-                } catch (ClassNotFoundException e) {
-                    e.printStackTrace();
-                }
+                login();
                 menu();
                 break;
             case 3:
@@ -163,60 +132,84 @@ public class Client {
                         System.out.println("Erro! :" + response.getMessage());
                     }
                     menuLogin();
-                } catch (Exception e) {
-                    Debug.m("--"+e);
-                    e.printStackTrace();
-                }
-
-                try {
-                    Response response = (Response) in.readObject();
-                } catch (IOException e) {
+                } catch (EOFException e){
                     Debug.m(e.getMessage());
+                    System.out.println("Error in the connection please try again");
+                    handleConnectionError();
+                    menuLogin();
+
                 } catch (ClassNotFoundException e) {
                     Debug.m(e.getMessage());
+                    System.out.println("Error in the connection please try again");
+                    handleConnectionError();
+                    menuLogin();
+                } catch (IOException e) {
+                    Debug.m(e.getMessage());
+                    System.out.println("Error in the connection please try again");
+                    handleConnectionError();
+                    menuLogin();
                 }
-
-
 
 
                 break;
             case 2 :
                 try {
+
                     out.writeObject(new Action(Action.GET_PROJECT_BY_ADMIN, user.getId()));
 
                     Response response = (Response) in.readObject();
 
-                    Debug.m(response.getMessage());
 
-                    ArrayList<Project> projects = (ArrayList<Project>) response.getObject();
-
+                    if(response.isSuccess()){
 
 
-                    for (int i = 1; i <= projects.size(); i++) {
-                        System.out.println(i + ". " + projects.get(i - 1).getName() + " Progress: " + projects.get(i - 1).getObjective() + "/" + projects.get(i - 1).getProgress());
+                        ArrayList<Project> projects = (ArrayList<Project>) response.getObject();
 
-                    }
-                    if(projects.isEmpty()){
-                        System.out.print("You don't have any projects yet!");
-                        menuLogin();
-                    }else {
-                        System.out.println("Choose one project to view details or 0 to go back");
-                    }
 
-                    int project = Util.readInt(projects.size());
 
-                    if(project == 0){
-                        menuLogin();
+                        for (int i = 1; i <= projects.size(); i++) {
+                            System.out.println(i + ". " + projects.get(i - 1).getName() + " Progress: " + projects.get(i - 1).getObjective() + "/" + projects.get(i - 1).getProgress());
+
+                        }
+                        if(projects.isEmpty()){
+                            System.out.print("You don't have any projects yet!");
+                            menuLogin();
+                        }else {
+                            System.out.println("Choose one project to view details or 0 to go back");
+                        }
+
+                        int project = Util.readInt(projects.size());
+
+                        if(project == 0){
+                            menuLogin();
+                        }else{
+                            showProject(projects.get(project-1).getId());
+                        }
                     }else{
-                        showProject(projects.get(project-1).getId());
+                        System.out.println("There was a proble in the connection please try again");
+                        menuLogin();
                     }
 
 
 
-                } catch (IOException e) {
-                    e.printStackTrace();
+
+
+                } catch (EOFException e){
+                    Debug.m(e.getMessage());
+                    System.out.println("Error in the connection please try again");
+                    handleConnectionError();
+                    menuLogin();
+
                 } catch (ClassNotFoundException e) {
-                    e.printStackTrace();
+                    Debug.m(e.getMessage());
+                    System.out.println("Error in the connection please try again");
+                    handleConnectionError();
+                    menuLogin();
+                } catch (IOException e) {
+                    Debug.m(e.getMessage());
+                    System.out.println("Error in the connection please try again");
+                    handleConnectionError();
+                    menuLogin();
                 }
 
 
@@ -226,77 +219,116 @@ public class Client {
                     out.writeObject(new Action(Action.GET_OLD_PROJECTS, user.getId()));
 
                     Response response = (Response) in.readObject();
+                    if(response.isSuccess()){
 
-                    Debug.m(response.getMessage());
-
-                    ArrayList<Project> projects = (ArrayList<Project>) response.getObject();
-
+                        ArrayList<Project> projects = (ArrayList<Project>) response.getObject();
 
 
-                    for (int i = 1; i <= projects.size(); i++) {
-                        System.out.println(i + ". " + projects.get(i - 1).getName() + " Progress: " + projects.get(i - 1).getObjective() + "/" + projects.get(i - 1).getProgress());
 
-                    }
-                    if(projects.isEmpty()){
-                        System.out.print("You don't have any old projects yet!");
-                        menuLogin();
-                    }else {
-                        System.out.println("Choose one project to view details or 0 to go back");
-                    }
+                        for (int i = 1; i <= projects.size(); i++) {
+                            System.out.println(i + ". " + projects.get(i - 1).getName() + " Progress: " + projects.get(i - 1).getObjective() + "/" + projects.get(i - 1).getProgress());
 
-                    int project = Util.readInt(projects.size());
+                        }
+                        if(projects.isEmpty()){
+                            System.out.print("You don't have any old projects yet!");
+                            menuLogin();
+                        }else {
+                            System.out.println("Choose one project to view details or 0 to go back");
+                        }
 
-                    if(project == 0){
-                        menuLogin();
+                        int project = Util.readInt(projects.size());
+
+                        if(project == 0){
+                            menuLogin();
+                        }else{
+                            showProject(projects.get(project-1).getId());
+                        }
                     }else{
-                        showProject(projects.get(project-1).getId());
+                        System.out.println("There was a proble in the connection please try again");
+                        menuLogin();
                     }
 
 
 
-                } catch (IOException e) {
-                    e.printStackTrace();
+
+
+                } catch (EOFException e){
+                    Debug.m(e.getMessage());
+                    System.out.println("Error in the connection please try again");
+                    handleConnectionError();
+                    menuLogin();
+
                 } catch (ClassNotFoundException e) {
-                    e.printStackTrace();
+                    Debug.m(e.getMessage());
+                    System.out.println("Error in the connection please try again");
+                    handleConnectionError();
+                    menuLogin();
+                } catch (IOException e) {
+                    Debug.m(e.getMessage());
+                    System.out.println("Error in the connection please try again");
+                    handleConnectionError();
+                    menuLogin();
                 }
 
 
                 break;
             case 4 :
                 try {
+                    Debug.m("start receiving");
                     out.writeObject(new Action(Action.GET_PROJECTS));
 
+                    Debug.m("start receiving");
                     Response response = (Response) in.readObject();
+                    Debug.m("end receiving");
+                    if(response.isSuccess()){
+                        ArrayList<Project> projects = (ArrayList<Project>) response.getObject();
 
-                    ArrayList<Project> projects = (ArrayList<Project>) response.getObject();
 
 
+                        for (int i = 1; i <= projects.size(); i++) {
+                            System.out.println(i + ". " + projects.get(i - 1).getName() + " Progress: " + projects.get(i - 1).getObjective() + "/" + projects.get(i - 1).getProgress());
 
-                    for (int i = 1; i <= projects.size(); i++) {
-                        System.out.println(i + ". " + projects.get(i - 1).getName() + " Progress: " + projects.get(i - 1).getObjective() + "/" + projects.get(i - 1).getProgress());
+                        }
+                        if(projects.isEmpty()){
+                            System.out.print("There are no projects yet!");
+                            menuLogin();
+                        }else {
+                            System.out.println("Choose one project to view details or 0 to go back");
+                        }
 
-                    }
-                    if(projects.isEmpty()){
-                        System.out.print("There are no projects yet!");
-                        menuLogin();
-                    }else {
-                        System.out.println("Choose one project to view details or 0 to go back");
-                    }
+                        int project = Util.readInt(projects.size());
 
-                    int project = Util.readInt(projects.size());
+                        if(project == 0){
+                            menuLogin();
+                        }else{
+                            showProject(projects.get(project-1).getId());
+                        }
 
-                    if(project == 0){
-                        menuLogin();
                     }else{
-                        showProject(projects.get(project-1).getId());
+                        System.out.println("There was a proble in the connection please try again");
+                        menuLogin();
                     }
 
 
 
-                } catch (IOException e) {
-                    e.printStackTrace();
+
+
+                } catch (EOFException e){
+                    Debug.m(e.getMessage());
+                    System.out.println("Error in the connection please try again");
+                    handleConnectionError();
+                    menuLogin();
+
                 } catch (ClassNotFoundException e) {
-                    e.printStackTrace();
+                    Debug.m(e.getMessage());
+                    System.out.println("Error in the connection please try again");
+                    handleConnectionError();
+                    menuLogin();
+                } catch (IOException e) {
+                    Debug.m(e.getMessage());
+                    System.out.println("Error in the connection please try again");
+                    handleConnectionError();
+                    menuLogin();
                 }
 
 
@@ -308,15 +340,27 @@ public class Client {
                     this.user = user;
                     System.out.println("Your user balance is: " + user.getBalance());
 
-                } catch (IOException e) {
-                    e.printStackTrace();
+                } catch (EOFException e){
+                    Debug.m(e.getMessage());
+                    System.out.println("Error in the connection please try again");
+                    handleConnectionError();
+                    menuLogin();
+
                 } catch (ClassNotFoundException e) {
-                    e.printStackTrace();
+                    Debug.m(e.getMessage());
+                    System.out.println("Error in the connection please try again");
+                    handleConnectionError();
+                    menuLogin();
+                } catch (IOException e) {
+                    Debug.m(e.getMessage());
+                    System.out.println("Error in the connection please try again");
+                    handleConnectionError();
+                    menuLogin();
                 }
 
                 menuLogin();
 
-                menu();
+
 
                 break;
             case 6:
@@ -339,14 +383,22 @@ public class Client {
                     }
 
 
+                } catch (EOFException e){
+                    Debug.m(e.getMessage());
+                    System.out.println("Error in the connection please try again");
+                    handleConnectionError();
+                    menuLogin();
 
-
-
-
-                } catch (IOException e) {
-                    e.printStackTrace();
                 } catch (ClassNotFoundException e) {
-                    e.printStackTrace();
+                    Debug.m(e.getMessage());
+                    System.out.println("Error in the connection please try again");
+                    handleConnectionError();
+                    menuLogin();
+                } catch (IOException e) {
+                    Debug.m(e.getMessage());
+                    System.out.println("Error in the connection please try again");
+                    handleConnectionError();
+                    menuLogin();
                 }
                 menuLogin();
                 break;
@@ -359,6 +411,78 @@ public class Client {
         }
     }
 
+
+    public void login(){
+        System.out.println("Please insert Username: ");
+        String usernameLogin = Util.readString();
+        System.out.println("Please insert Password: ");
+        String passwordLogin = Util.readString();
+        try {
+            out.writeObject(new Action(Action.LOGIN,new User(usernameLogin,passwordLogin)));
+
+            Response response = (Response) in.readObject();
+            if(response.isSuccess()){
+                System.out.println("\nLogged in!");
+                this.user = (User) response.getObject();
+                menuLogin();
+            }else{
+                System.out.println("Failed!\n" + response.getMessage());
+            }
+        } catch (EOFException e){
+            Debug.m(e.getMessage());
+            System.out.println("Error in the connection please try again");
+            handleConnectionError();
+            menuLogin();
+
+        } catch (ClassNotFoundException e) {
+            Debug.m(e.getMessage());
+            System.out.println("Error in the connection please try again");
+            handleConnectionError();
+            menuLogin();
+        } catch (IOException e) {
+            Debug.m(e.getMessage());
+            System.out.println("Error in the connection please try again");
+
+            handleConnectionError();
+            menuLogin();
+        }
+    }
+
+    public void register(){
+        System.out.println("Please insert Username: ");
+        String username = Util.readString();
+        System.out.println("Please insert Password: ");
+        String password = Util.readString();
+
+        try {
+            out.writeObject(new Action(Action.SIGUP,new User(username,password)));
+
+            Response response = (Response) in.readObject();
+            if(response.isSuccess()){
+                System.out.println(response.getMessage() + "\nPlease login!");
+
+            }else{
+                System.out.println("Failed!\n" + response.getMessage());
+            }
+
+        } catch (EOFException e){
+            Debug.m(e.getMessage());
+            System.out.println("Error in the connection please try again");
+            handleConnectionError();
+            menuLogin();
+
+        } catch (ClassNotFoundException e) {
+            Debug.m(e.getMessage());
+            System.out.println("Error in the connection please try again");
+            handleConnectionError();
+            menuLogin();
+        } catch (IOException e) {
+            Debug.m(e.getMessage());
+            System.out.println("Error in the connection please try again");
+            handleConnectionError();
+            menuLogin();
+        }
+    }
 
     public void showProject(int projectId){
 
@@ -522,10 +646,22 @@ public class Client {
             }
 
 
-        } catch (IOException e) {
-            e.printStackTrace();
+        } catch (EOFException e){
+            Debug.m(e.getMessage());
+            System.out.println("Error in the connection please try again");
+            handleConnectionError();
+            menuLogin();
+
         } catch (ClassNotFoundException e) {
-            e.printStackTrace();
+            Debug.m(e.getMessage());
+            System.out.println("Error in the connection please try again");
+            handleConnectionError();
+            menuLogin();
+        } catch (IOException e) {
+            Debug.m(e.getMessage());
+            System.out.println("Error in the connection please try again");
+            handleConnectionError();
+            menuLogin();
         }
 
     }
@@ -570,13 +706,21 @@ public class Client {
                     break;
                 case 2:showProject(projectId);break;
             }
-        } catch (IOException e) {
+        } catch (EOFException e){
             Debug.m(e.getMessage());
-            e.printStackTrace();
+            System.out.println("Error in the connection please try again");
+            handleConnectionError();
             showProject(projectId);
+
         } catch (ClassNotFoundException e) {
             Debug.m(e.getMessage());
-            e.printStackTrace();
+            System.out.println("Error in the connection please try again");
+            handleConnectionError();
+            showProject(projectId);
+        } catch (IOException e) {
+            Debug.m(e.getMessage());
+            System.out.println("Error in the connection please try again");
+            handleConnectionError();
             showProject(projectId);
         }
     }
@@ -616,12 +760,22 @@ public class Client {
                 }
 
             }
-        } catch (IOException e) {
+        } catch (EOFException e){
             Debug.m(e.getMessage());
-            e.printStackTrace();
+            System.out.println("Error in the connection please try again");
+            handleConnectionError();
+            showProject(projectId);
+
         } catch (ClassNotFoundException e) {
             Debug.m(e.getMessage());
-            e.printStackTrace();
+            System.out.println("Error in the connection please try again");
+            handleConnectionError();
+            showProject(projectId);
+        } catch (IOException e) {
+            Debug.m(e.getMessage());
+            System.out.println("Error in the connection please try again");
+            handleConnectionError();
+            showProject(projectId);
         }
     }
 
@@ -638,17 +792,30 @@ public class Client {
                     this.user = (User) responseUser.getObject();
                 }
 
+
             }else{
                 Debug.m("Error deleting project" + response.getMessage());
             }
+            menuLogin();
 
-        } catch (IOException e) {
+        } catch (EOFException e){
             Debug.m(e.getMessage());
-            e.printStackTrace();
+            System.out.println("Error in the connection please try again");
+            handleConnectionError();
+            menuLogin();
+
         } catch (ClassNotFoundException e) {
             Debug.m(e.getMessage());
-            e.printStackTrace();
+            System.out.println("Error in the connection please try again");
+            handleConnectionError();
+            menuLogin();
+        } catch (IOException e) {
+            Debug.m(e.getMessage());
+            System.out.println("Error in the connection please try again");
+            handleConnectionError();
+            menuLogin();
         }
+
     }
 
     private void pledge(int projectId) {
@@ -665,12 +832,22 @@ public class Client {
                     System.out.println("You don't have enought money!!");
                 Debug.m("Error in Pledge insertion: " +response.getMessage());
             }
-        } catch (IOException e) {
+        } catch (EOFException e){
             Debug.m(e.getMessage());
-            e.printStackTrace();
+            System.out.println("Error in the connection please try again");
+            handleConnectionError();
+            showProject(projectId);
+
         } catch (ClassNotFoundException e) {
             Debug.m(e.getMessage());
-            e.printStackTrace();
+            System.out.println("Error in the connection please try again");
+            handleConnectionError();
+            showProject(projectId);
+        } catch (IOException e) {
+            Debug.m(e.getMessage());
+            System.out.println("Error in the connection please try again");
+            handleConnectionError();
+            showProject(projectId);
         }
         showProject(projectId);
 
@@ -745,12 +922,27 @@ public class Client {
                 }
 
 
-            }else{}
+            }else{
+                System.out.println("Error on the conection please try again");
+                showProject(projectId);
+            }
 
-        } catch (IOException e) {
-            e.printStackTrace();
+        } catch (EOFException e){
+            Debug.m(e.getMessage());
+            System.out.println("Error in the connection please try again");
+            handleConnectionError();
+            showProject(projectId);
+
         } catch (ClassNotFoundException e) {
-            e.printStackTrace();
+            Debug.m(e.getMessage());
+            System.out.println("Error in the connection please try again");
+            handleConnectionError();
+            showProject(projectId);
+        } catch (IOException e) {
+            Debug.m(e.getMessage());
+            System.out.println("Error in the connection please try again");
+            handleConnectionError();
+            showProject(projectId);
         }
     }
 
@@ -772,10 +964,22 @@ public class Client {
             }else{
                 Debug.m(response.getMessage());
             }
-        } catch (IOException e) {
-            e.printStackTrace();
+        } catch (EOFException e){
+            Debug.m(e.getMessage());
+            System.out.println("Error in the connection please try again");
+            handleConnectionError();
+            showProject(projectId);
+
         } catch (ClassNotFoundException e) {
-            e.printStackTrace();
+            Debug.m(e.getMessage());
+            System.out.println("Error in the connection please try again");
+            handleConnectionError();
+            showProject(projectId);
+        } catch (IOException e) {
+            Debug.m(e.getMessage());
+            System.out.println("Error in the connection please try again");
+            handleConnectionError();
+            showProject(projectId);
         }
 
     }
@@ -798,15 +1002,24 @@ public class Client {
                 System.out.println("Insert again!");
                 addReward(projectId);
             }
-        } catch (IOException e) {
+        } catch (EOFException e){
             Debug.m(e.getMessage());
-            e.printStackTrace();
+            System.out.println("Error in the connection please try again");
+            handleConnectionError();
+            showProject(projectId);
+
         } catch (ClassNotFoundException e) {
             Debug.m(e.getMessage());
-            e.printStackTrace();
+            System.out.println("Error in the connection please try again");
+            handleConnectionError();
+            showProject(projectId);
+        } catch (IOException e) {
+            Debug.m(e.getMessage());
+            System.out.println("Error in the connection please try again");
+            handleConnectionError();
+            showProject(projectId);
         }
     }
-
 
     public void addPoll(int projectId){
 
@@ -831,14 +1044,61 @@ public class Client {
                 System.out.println("Insert again!");
                 addPoll(projectId);
             }
-        } catch (IOException e) {
+
+        } catch (EOFException e){
             Debug.m(e.getMessage());
-            e.printStackTrace();
+            System.out.println("Error in the connection please try again");
+            handleConnectionError();
+            showProject(projectId);
+
         } catch (ClassNotFoundException e) {
             Debug.m(e.getMessage());
-            e.printStackTrace();
+            System.out.println("Error in the connection please try again");
+            handleConnectionError();
+            showProject(projectId);
+        } catch (IOException e) {
+            Debug.m(e.getMessage());
+            System.out.println("Error in the connection please try again");
+            handleConnectionError();
+            showProject(projectId);
         }
 
+    }
+
+    public boolean handleConnectionError(){
+        System.out.println("Error on the conection, trying to reconnect");
+
+
+        boolean verification = false;
+
+        while (!verification){
+            System.out.print(".");
+            try {
+                // 1o passo
+                socket = new Socket(host, serversocket);
+
+                System.out.println("Ligado ao servidor TCP" + socket);
+                // 2o passo
+                in = new ObjectInputStream(socket.getInputStream());
+                out = new ObjectOutputStream(socket.getOutputStream());
+
+                verification = true;
+
+
+
+            } catch (UnknownHostException e) {
+                try {Thread.sleep(1000);} catch(InterruptedException ex) {Thread.currentThread().interrupt();}
+                //Debug.m("Sock:" + e.getMessage());
+            } catch (EOFException e) {
+                try {Thread.sleep(1000);} catch(InterruptedException ex) {Thread.currentThread().interrupt();}
+                //Debug.m("EOF:" + e.getMessage());
+            } catch (IOException e) {
+                try {Thread.sleep(1000);} catch(InterruptedException ex) {Thread.currentThread().interrupt();}
+                //Debug.m("IO:" + e.getMessage());
+            }
+
+        }
+        return verification;
     }
 
 
