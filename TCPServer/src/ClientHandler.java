@@ -31,6 +31,7 @@ public class ClientHandler extends Thread {
             this.out = new ObjectOutputStream(this.socket.getOutputStream());
             this.in = new ObjectInputStream(this.socket.getInputStream());
         }catch (IOException e){
+            new ClientHandler(this.socket, this.storageServer, this.tcpServer);
             Debug.m("Error on Client Contructor:" + e);
         }
 
@@ -139,30 +140,36 @@ public class ClientHandler extends Thread {
                         break;
                 }
 
-
-
                 out.writeObject(response);
 
             }
         } catch (ClassNotFoundException e) {
             Debug.m("Error on ClientHandler ClassNotFoundException: " + e.getMessage());
             e.printStackTrace();
+            try {
+                out.writeObject(new Response(false, "Error on Conection! please try again"));
+            } catch (IOException e1) {
+                e1.printStackTrace();
+            }
         } catch (RemoteException e) {
             Debug.m("Error on ClientHandler RemoteException: " + e.getMessage());
             try {
-                tcpServer.setupRMI();
-            } catch (InterruptedException e1) {
+                out.writeObject(new Response(false, "Error on Conection! please try again!"));
+            } catch (IOException e1) {
                 e1.printStackTrace();
             }
+            tcpServer.setupRMI();
+
         } catch (IOException e) {
 
             Debug.m("Error on ClientHandler IOException: " + e.getMessage());
             e.printStackTrace();
+            try {
+                out.writeObject(new Response(false, "Error on Conection! please try again"));
+            } catch (IOException e1) {
+                e1.printStackTrace();
+            }
         }
-
-
-
-
 
     }
 }
