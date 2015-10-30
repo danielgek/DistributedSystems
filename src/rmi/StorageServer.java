@@ -37,11 +37,6 @@ public class StorageServer extends UnicastRemoteObject implements StorageServerI
 
         try {
             connection = DriverManager.getConnection("jdbc:mysql://localhost:3306/sd", "root", "secret");
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-        // setup for querys
-        try {
             statement = connection.createStatement();
         } catch (SQLException e) {
             e.printStackTrace();
@@ -112,7 +107,7 @@ public class StorageServer extends UnicastRemoteObject implements StorageServerI
                 return new Response(true, "Logged in successfuly", user);
             }else{
 
-                return new Response(false, "User cardentials wrong!" ,null);
+                return new Response(false, "User cardentials wrong!");
             }
 
 
@@ -222,7 +217,7 @@ public class StorageServer extends UnicastRemoteObject implements StorageServerI
                         rs.getDate(6));
             }
 
-            rs = statement.executeQuery("SELECT SUM(amount) AS AMOUNT FROM pledges WHERE id_user = " + project.getAdminId() + " AND id_project = " + project.getId() + ";");
+            rs = statement.executeQuery("SELECT SUM(amount) AS AMOUNT FROM pledges WHERE id_project = " + project.getId() + ";");
             if(rs.next()){
                 project.setProgress(rs.getDouble("AMOUNT"));
             }
