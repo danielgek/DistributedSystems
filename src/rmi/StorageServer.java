@@ -10,6 +10,7 @@ import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.server.UnicastRemoteObject;
 import java.sql.*;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 
@@ -51,6 +52,7 @@ public class StorageServer extends UnicastRemoteObject implements StorageServerI
         System.setProperty("java.rmi.server.hostname", "127.0.0.1");
         try {
             StorageServerInterface storageServerInterface = new StorageServer();
+            new EndProjectTask();
             LocateRegistry.createRegistry(25055).rebind("storageServer", storageServerInterface);
         } catch (RemoteException e) {
             // TODO Auto-generated catch block
@@ -162,13 +164,18 @@ public class StorageServer extends UnicastRemoteObject implements StorageServerI
         try {
 
 
+            SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm");
+
+
+
+
             statement.executeUpdate("INSERT INTO projects (id_admin, title, description, objective, limite)" +
                     "VALUES" +
                     "(" + project.getAdminId() + ", '" +
                     project.getName() + "', '" +
                     project.getDescription() + "', " +
                     project.getObjective() + ", '" +
-                    Util.convertFromJAVADateToSQLDate(project.getLimit()) + "');", Statement.RETURN_GENERATED_KEYS);
+                    simpleDateFormat.format(project.getLimit()) + "');", Statement.RETURN_GENERATED_KEYS);
 
             rs=statement.getGeneratedKeys();
 
@@ -278,7 +285,7 @@ public class StorageServer extends UnicastRemoteObject implements StorageServerI
     @Override
     public Response getProjects() throws RemoteException {
         try {
-            rs = statement.executeQuery("SELECT * FROM projects WHERE limite > CURDATE() AND soft_deleted = 0;");
+            rs = statement.executeQuery("SELECT * FROM projects WHERE limite > NOW() AND soft_deleted = 0;");
 
             Response response = new Response(true, "There is your project!");
 
@@ -314,7 +321,7 @@ public class StorageServer extends UnicastRemoteObject implements StorageServerI
 
     public Response getOldProjects() throws RemoteException {
         try {
-            rs = statement.executeQuery("SELECT * FROM projects WHERE limite < CURDATE() AND soft_deleted = 0;");
+            rs = statement.executeQuery("SELECT * FROM projects WHERE limite < NOW() AND soft_deleted = 0;");
 
             Response response = new Response(true, "There is your project!");
 
@@ -355,13 +362,28 @@ public class StorageServer extends UnicastRemoteObject implements StorageServerI
 
             rs = statement.executeQuery("SELECT * FROM pledges WHERE id_project = " + id);
 
-            ;
 
 
+
+
+
+
+
+            String query = "DELETE FROM pledges WHERE ";
             while(rs.next()){
+                if(rs.isFirst()){
+                    query += " id = " + rs.getInt("id");
+                }else {
+                    query +=  " OR id = " + rs.getInt("id");
+                }
                 Statement balanceStatement = connection.createStatement();
+
+
+
                 balanceStatement.executeUpdate("UPDATE users SET balance = balance + " + rs.getDouble("amount") + " WHERE id = " + rs.getInt("id_user"));
             }
+
+            statement.executeUpdate(query);
 
 
 
@@ -435,7 +457,7 @@ public class StorageServer extends UnicastRemoteObject implements StorageServerI
     @Override
     public Response getCurrentRewards(int userId) throws RemoteException {
         try {
-            Debug.m("SELECT * FROM rewards, (Select * from projects ) projects, (SELECT * from pledges WHERE pledges.id_user = " + userId + ") pledges where projects.id =  rewards.id_project and projects.id = pledges.id_project and rewards.value <= pledges.amount;");
+            //Debug.m("SELECT * FROM rewards, (Select * from projects ) projects, (SELECT * from pledges WHERE pledges.id_user = " + userId + ") pledges where projects.id =  rewards.id_project and projects.id = pledges.id_project and rewards.value <= pledges.amount;");
 
             rs = statement.executeQuery("SELECT * FROM rewards, (Select * from projects WHERE soft_deleted = 0 ) projects, (SELECT * from pledges WHERE pledges.id_user = " + userId + ") pledges where projects.id =  rewards.id_project and projects.id = pledges.id_project and rewards.value <= pledges.amount;");
             Debug.m("number" + rs.getFetchSize() + "");
