@@ -3,8 +3,11 @@ import java.net.Socket;
 import java.net.UnknownHostException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Date;
+//import java.time.format.
 import java.util.Scanner;
 import java.util.concurrent.ExecutionException;
 
@@ -104,13 +107,16 @@ public class Client {
                 String description = Util.readString();
                 System.out.println("Insert project objective: ");
                 double objective = Util.readDouble();
-                System.out.println("Insert project final date(dd/mm/yyyy): ");
+                System.out.println("Insert project final date(dd/mm/yyyy hh:mm): ");
 
                 boolean dateCheck = true;
                 Date limit = null;
                 while (dateCheck){
                     try {
-                        limit = new Date(Util.readString());
+                        //limit = new Date(Util.readString());
+                        SimpleDateFormat formatter = new SimpleDateFormat("dd/MM/yyyy HH:mm");
+                        limit = formatter.parse(Util.readString());
+                        System.out.println(limit.toString());
                         if(limit != null) dateCheck = false;
                     } catch ( Exception e) {
                         System.out.println("Date not recognized! \nPlease insert again: ");
