@@ -7,6 +7,7 @@ import java.io.Serializable;
  */
 public class Pledge implements Serializable{
 
+    private int id;
     private int projectId;
     private int userId;
     private double amount;
@@ -15,6 +16,21 @@ public class Pledge implements Serializable{
         this.projectId = projectId;
         this.userId = userId;
         this.amount = amount;
+    }
+
+    public Pledge(int id, int projectId, int userId, double amount) {
+        this.id = id;
+        this.projectId = projectId;
+        this.userId = userId;
+        this.amount = amount;
+    }
+
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
     }
 
     public int getProjectId() {
@@ -44,7 +60,8 @@ public class Pledge implements Serializable{
     @Override
     public String toString() {
         return "Pledge{" +
-                "projectId=" + projectId +
+                "id=" + id +
+                ", projectId=" + projectId +
                 ", userId=" + userId +
                 ", amount=" + amount +
                 '}';
