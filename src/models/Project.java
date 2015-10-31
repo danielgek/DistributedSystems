@@ -101,6 +101,10 @@ public class Project implements Serializable {
         this.progress = progress;
     }
 
+    public boolean reatched(){
+        return progress >= objective;
+    }
+
     @Override
     public String toString() {
         return "Project{" +
