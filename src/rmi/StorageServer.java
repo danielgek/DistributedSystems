@@ -48,12 +48,24 @@ public class StorageServer extends UnicastRemoteObject implements StorageServerI
 
 
     public static void main(String args[]) {
+        if (args.length < 2){
+            System.out.println("java -jar RmiServer.jar <adress> <port>");
+            return;
+        }
+        String rmiAdress = args[0];
+        int rmiPort;
+        try {
+            rmiPort = Integer.parseInt(args[1]);
+        } catch (NumberFormatException e ){
+            System.out.println("please write a valid port");
+            return;
+        }
 
-        System.setProperty("java.rmi.server.hostname", "127.0.0.1");
+        System.setProperty("java.rmi.server.hostname", rmiAdress);
         try {
             StorageServerInterface storageServerInterface = new StorageServer();
             new EndProjectTask();
-            LocateRegistry.createRegistry(25055).rebind("storageServer", storageServerInterface);
+            LocateRegistry.createRegistry(rmiPort).rebind("storageServer", storageServerInterface);
         } catch (RemoteException e) {
             // TODO Auto-generated catch block
             e.printStackTrace();
@@ -266,8 +278,7 @@ public class StorageServer extends UnicastRemoteObject implements StorageServerI
                 if(resultSet.next()){
                     project.setProgress(resultSet.getDouble("AMOUNT"));
                 }
-                statement1.close();
-                resultSet.close();
+                cleanSql(resultSet, statement1);
                 projects.add(project);
 
             }
@@ -306,8 +317,7 @@ public class StorageServer extends UnicastRemoteObject implements StorageServerI
                 if(resultSet.next()){
                     project.setProgress(resultSet.getDouble("AMOUNT"));
                 }
-                statement1.close();
-                resultSet.close();
+                cleanSql(resultSet, statement1);
                 projects.add(project);
             }
 
@@ -342,8 +352,7 @@ public class StorageServer extends UnicastRemoteObject implements StorageServerI
                 if(resultSet.next()){
                     project.setProgress(resultSet.getDouble("AMOUNT"));
                 }
-                statement1.close();
-                resultSet.close();
+                cleanSql(resultSet, statement1);
                 projects.add(project);
             }
 
@@ -362,13 +371,6 @@ public class StorageServer extends UnicastRemoteObject implements StorageServerI
 
             rs = statement.executeQuery("SELECT * FROM pledges WHERE id_project = " + id);
 
-
-
-
-
-
-
-
             String query = "DELETE FROM pledges WHERE ";
             while(rs.next()){
                 if(rs.isFirst()){
@@ -378,9 +380,8 @@ public class StorageServer extends UnicastRemoteObject implements StorageServerI
                 }
                 Statement balanceStatement = connection.createStatement();
 
-
-
                 balanceStatement.executeUpdate("UPDATE users SET balance = balance + " + rs.getDouble("amount") + " WHERE id = " + rs.getInt("id_user"));
+                balanceStatement.close();
             }
 
             statement.executeUpdate(query);
@@ -794,6 +795,13 @@ public class StorageServer extends UnicastRemoteObject implements StorageServerI
             e.printStackTrace();
             return new Response(false, "Error getting Messages!");
         }
+    }
+
+
+    @Override
+    protected void finalize() throws Throwable {
+        super.finalize();
+        cleanSql(rs,statement);
     }
 
     public static void cleanSql(ResultSet resultSet, Statement statement){

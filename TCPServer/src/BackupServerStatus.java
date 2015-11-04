@@ -15,7 +15,7 @@ public class BackupServerStatus {
     int serverPort;
     boolean primary = true;
 
-    public BackupServerStatus(String serverIp, int serverPort, boolean primary) {
+    public BackupServerStatus(String serverIp, boolean primary) {
 
         this.serverIp = serverIp;
         this.serverPort = serverPort;
@@ -26,7 +26,7 @@ public class BackupServerStatus {
             new Server();
         }else{
             //starting client because i'm the secundary server, as soon as this gives error badum start tcp :D
-            new Client(serverIp,serverPort);
+            new Client(serverIp);
         }
 
     }
@@ -50,7 +50,7 @@ public class BackupServerStatus {
 
 
             try {
-                datagramSocket = new DatagramSocket(serverPort);
+                datagramSocket = new DatagramSocket(43000);
                 while(true){
 
                     DatagramPacket inDatagramPacket = new DatagramPacket(receiveData, BUFFER_SIZE);
@@ -65,9 +65,9 @@ public class BackupServerStatus {
 
                     String outMessagae = "Don't turn on !!";
 
-                    DatagramPacket out_datagramPacket= new DatagramPacket(outMessagae.getBytes(), outMessagae.length(), clientAddress, clientPort);
+                    DatagramPacket outDatagramPacket= new DatagramPacket(outMessagae.getBytes(), outMessagae.length(), clientAddress, clientPort);
 
-                    datagramSocket.send(out_datagramPacket);
+                    datagramSocket.send(outDatagramPacket);
                 }
 
             } catch (SocketException e) {
@@ -87,14 +87,11 @@ public class BackupServerStatus {
         DatagramSocket datagramSocket;
         byte[] receiveData = new byte[BUFFER_SIZE];
         int failedTryCounter;
-
-        private int port;
         private String address;
 
-        public Client(String address, int port) {
+        public Client(String address) {
 
             this.address = address;
-            this.port = port;
             failedTryCounter = 0;
             this.start();
         }
@@ -120,9 +117,9 @@ public class BackupServerStatus {
 
                     datagramSocket = new DatagramSocket();
 
-                    DatagramPacket outDatagramPacket = new DatagramPacket(data.getBytes(), data.length(), inetAddress, this.port);
+                    DatagramPacket outDatagramPacket = new DatagramPacket(data.getBytes(), data.length(), inetAddress, 430000);
 
-                    datagramSocket.setSoTimeout(2000);
+                    datagramSocket.setSoTimeout(1000*6);//6 secs
                     datagramSocket.send(outDatagramPacket);
                     Debug.m("Sended ping");
 

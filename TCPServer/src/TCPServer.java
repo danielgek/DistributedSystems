@@ -21,7 +21,8 @@ public class TCPServer {
     private int tcpServerPort = 6000;
     ServerSocket listenSocket;
 
-    public TCPServer(int port) {
+    public TCPServer(String rmiAdress, String rmiPort, int port) {
+        naming = "//" + rmiAdress + ":" + "/storageServer";
         this.tcpServerPort = port;
 
         setupRMI();
@@ -100,13 +101,14 @@ public class TCPServer {
     public static void main(String args[]) {
         int tcpServerPort = 6000;
 
-        if(args.length == 0){
+        if(args.length < 4){
             System.out.println("Error on start up options:");
-            System.out.println("Options:  true/false(primary) host port");
+            System.out.println("Options:  true(primary) <rmi server address> <rmi port> <running port>");
+            System.out.println("Options:  false(backup) <rmi server address> <rmi port> <running port> <primary server ip> ");
             return ;
         }
 
-        boolean primary ;
+        boolean primary;
 
         if (args[0].equals("true")){
             primary = true;
@@ -114,12 +116,21 @@ public class TCPServer {
             primary = false;
         }
 
-        String host = args[1];
-        int port = Integer.parseInt(args[2]);
+        String rmiAdress = args[1];
+        String rmiPort = args[2];
 
-        Debug.m("Startup options: " + primary + " " + host + " " + port);
+        String primaryServerAdress;
 
-        BackupServerStatus  backupServerStatus = new BackupServerStatus(host, port, primary);
+        if (!primary){
+            primaryServerAdress = args[2];
+        }else{
+            primaryServerAdress = "localhost";
+        }
+
+        int port = Integer.parseInt(args[3]);
+
+
+        BackupServerStatus  backupServerStatus = new BackupServerStatus( primaryServerAdress, primary);
 
         if(!primary){
             while(!backupServerStatus.isBackup()){
@@ -133,6 +144,6 @@ public class TCPServer {
 
 
         Debug.m("Starting TCP Server on " + tcpServerPort);
-        new TCPServer(tcpServerPort);
+        new TCPServer(rmiAdress, rmiPort, port);
     }
 }
