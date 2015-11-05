@@ -61,7 +61,7 @@ public class StorageServer extends UnicastRemoteObject implements StorageServerI
             return;
         }
 
-        System.setProperty("java.rmi.server.hostname", rmiAdress);
+
         try {
             StorageServerInterface storageServerInterface = new StorageServer();
             new EndProjectTask();
