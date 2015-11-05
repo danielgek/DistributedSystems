@@ -1,4 +1,5 @@
 import java.io.*;
+import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.net.SocketTimeoutException;
 import java.net.UnknownHostException;
@@ -42,8 +43,9 @@ public class Client {
 
         try {
             // 1o passo
-            socket = new Socket(host1, port1);
-            socket.setSoTimeout(3000);
+            socket = new Socket();
+            socket.connect(new InetSocketAddress(host1,port1), 3000);
+            //socket.setSoTimeout(3000);
 
             System.out.println("Ligado ao servidor TCP!!§");
             // 2o passo
@@ -53,14 +55,8 @@ public class Client {
 
 
 
-        } catch (UnknownHostException e) {
+        } catch (Exception e) {
             //Debug.m("Sock:" + e.getMessage());
-            handleConnectionError(e);
-        } catch (EOFException e) {
-            //Debug.m("EOF:" + e.getMessage());
-            handleConnectionError(e);
-        } catch (IOException e) {
-            //Debug.m("IO:" + e.getMessage());
             handleConnectionError(e);
         }
         menu();
@@ -915,11 +911,14 @@ public class Client {
             }
             try {
                 // 1o passo
-                socket = new Socket(finalHost, finalPort);
+                //socket.close();
+                socket = new Socket();
+                socket.connect(new InetSocketAddress(finalHost, finalPort), 3000);
 
                 System.out.println("sucess!!");
                 // 2o passo
                 in = new ObjectInputStream(socket.getInputStream());
+
                 out = new ObjectOutputStream(socket.getOutputStream());
 
                 verification = true;
@@ -934,7 +933,7 @@ public class Client {
                 try {Thread.sleep(1000);} catch(InterruptedException ex) {Thread.currentThread().interrupt();}
                 //Debug.m("IO:" + e1.getMessage());
             }
-
+            counter ++;
         }
         return verification;
     }
