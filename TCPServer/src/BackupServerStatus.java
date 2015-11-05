@@ -50,7 +50,7 @@ public class BackupServerStatus {
 
 
             try {
-                datagramSocket = new DatagramSocket(43000);
+                datagramSocket = new DatagramSocket(27000);
                 while(true){
 
                     DatagramPacket inDatagramPacket = new DatagramPacket(receiveData, BUFFER_SIZE);
@@ -92,6 +92,7 @@ public class BackupServerStatus {
         public Client(String address) {
 
             this.address = address;
+            System.out.println(address);
             failedTryCounter = 0;
             this.start();
         }
@@ -103,11 +104,7 @@ public class BackupServerStatus {
 
 
             while (!primary){
-                if(failedTryCounter >= 5){
-                    primary = true;
-                    System.out.println("primary=true");
 
-                }
                 try {
 
 
@@ -117,7 +114,7 @@ public class BackupServerStatus {
 
                     datagramSocket = new DatagramSocket();
 
-                    DatagramPacket outDatagramPacket = new DatagramPacket(data.getBytes(), data.length(), inetAddress, 430000);
+                    DatagramPacket outDatagramPacket = new DatagramPacket(data.getBytes(), data.length(), inetAddress, 27000);
 
                     datagramSocket.setSoTimeout(1000*6);//6 secs
                     datagramSocket.send(outDatagramPacket);
@@ -149,7 +146,7 @@ public class BackupServerStatus {
                     try {Thread.sleep(1000);} catch(InterruptedException ex) {Thread.currentThread().interrupt();}
 
                     Debug.m(e.getMessage());
-                    //e.printStackTrace();
+                    e.printStackTrace();
                 } catch (SocketTimeoutException e) {
 
                     failedTryCounter++;
@@ -168,6 +165,12 @@ public class BackupServerStatus {
                     //e.printStackTrace();
                 } finally {
                     datagramSocket.close();
+                }
+
+                if(failedTryCounter >= 5){
+                    primary = true;
+                    System.out.println("Going to primary state");
+
                 }
             }
         }
