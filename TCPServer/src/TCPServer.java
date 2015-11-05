@@ -22,7 +22,7 @@ public class TCPServer {
     ServerSocket listenSocket;
 
     public TCPServer(String rmiAdress, String rmiPort, int port) {
-        naming = "//" + rmiAdress + ":" + "/storageServer";
+        naming = "//" + rmiAdress + ":" + rmiPort + "/storageServer";
         this.tcpServerPort = port;
 
         setupRMI();
@@ -99,7 +99,7 @@ public class TCPServer {
 
 
     public static void main(String args[]) {
-        int tcpServerPort = 6000;
+
 
         if(args.length < 4){
             System.out.println("Error on start up options:");
@@ -122,7 +122,7 @@ public class TCPServer {
         String primaryServerAdress;
 
         if (!primary){
-            primaryServerAdress = args[2];
+            primaryServerAdress = args[4];
         }else{
             primaryServerAdress = "localhost";
         }
@@ -143,7 +143,7 @@ public class TCPServer {
 
 
 
-        Debug.m("Starting TCP Server on " + tcpServerPort);
+        Debug.m("Starting TCP Server on " + port);
         new TCPServer(rmiAdress, rmiPort, port);
     }
 }
