@@ -8,6 +8,7 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
+import java.net.SocketTimeoutException;
 import java.rmi.RemoteException;
 
 /**
@@ -43,6 +44,7 @@ public class ClientHandler extends Thread {
 
         try{
             while(true){
+                System.out.println("isConnected");
                 Action action = (Action) in.readObject();
                 Debug.m(action.toString());
                 Response response = null;
@@ -160,16 +162,35 @@ public class ClientHandler extends Thread {
             }
             tcpServer.setupRMI();
 
-        } catch (IOException e) {
+        } catch (SocketTimeoutException e){
+            Debug.m(e.getMessage());
 
-            Debug.m("Error on ClientHandler IOException: " + e.getMessage());
-            e.printStackTrace();
+        } catch (EOFException e){
+            Debug.m("Error on ClientHandler IOException: problabli disconected");
+
+
+            //e.printStackTrace();
             try {
                 out.writeObject(new Response(false, "Error on Conection! please try again"));
             } catch (IOException e1) {
-                e1.printStackTrace();
+                //e1.printStackTrace();
             }
+            this.interrupt();
+        } catch (IOException e) {
+
+            Debug.m("Error on ClientHandler IOException: problably disconected");
+
+
+            //e.printStackTrace();
+            try {
+                out.writeObject(new Response(false, "Error on Conection! please try again"));
+            } catch (IOException e1) {
+                //e1.printStackTrace();
+            }
+            this.interrupt();
         }
 
     }
+
+
 }
