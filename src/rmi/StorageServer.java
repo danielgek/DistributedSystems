@@ -64,7 +64,7 @@ public class StorageServer extends UnicastRemoteObject implements StorageServerI
 
         try {
             StorageServerInterface storageServerInterface = new StorageServer();
-            new EndProjectTask();
+            //new EndProjectTask();
             LocateRegistry.createRegistry(rmiPort).rebind("storageServer", storageServerInterface);
         } catch (RemoteException e) {
             // TODO Auto-generated catch block

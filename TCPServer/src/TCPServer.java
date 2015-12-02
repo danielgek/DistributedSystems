@@ -22,7 +22,7 @@ public class TCPServer {
     ServerSocket listenSocket;
 
     public TCPServer(String rmiAdress, String rmiPort, int port) {
-        naming = "//" + rmiAdress + ":" + rmiPort + "/storageServer";
+        //naming = "//" + rmiAdress + ":" + rmiPort + "/storageServer";
         this.tcpServerPort = port;
 
         setupRMI();
@@ -130,7 +130,7 @@ public class TCPServer {
         int port = Integer.parseInt(args[3]);
 
 
-        BackupServerStatus  backupServerStatus = new BackupServerStatus( primaryServerAdress, primary);
+        /*BackupServerStatus  backupServerStatus = new BackupServerStatus( primaryServerAdress, primary);
 
         if(!primary){
             while(!backupServerStatus.isBackup()){
@@ -139,7 +139,7 @@ public class TCPServer {
                 try {Thread.sleep(1000);} catch(InterruptedException ex) {Thread.currentThread().interrupt();}
                 //while is backup it will be stuck here till it can be primary the it will get the job done
             }
-        }
+        }*/
 
 
 

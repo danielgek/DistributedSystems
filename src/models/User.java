@@ -1,6 +1,13 @@
 package models;
 
+import rmi.StorageServer;
+import rmi.StorageServerInterface;
+
 import java.io.Serializable;
+import java.net.MalformedURLException;
+import java.rmi.Naming;
+import java.rmi.NotBoundException;
+import java.rmi.RemoteException;
 
 /**
  * Created by danielgek on 09/10/15.
@@ -11,6 +18,8 @@ public class User implements Serializable {
     private String username;
     private String password;
     private double balance;
+
+    public User() {}
 
     public User(int id, String username, String password, double balance) {
         this.id = id;
@@ -61,6 +70,8 @@ public class User implements Serializable {
     public void setBalance(double balance) {
         this.balance = balance;
     }
+
+
 
     @Override
     public String toString() {

@@ -1,6 +1,13 @@
 package models;
 
+import rmi.StorageServerInterface;
+
 import java.io.Serializable;
+import java.net.MalformedURLException;
+import java.rmi.Naming;
+import java.rmi.NotBoundException;
+import java.rmi.RemoteException;
+import java.util.ArrayList;
 import java.util.Date;
 
 /**
@@ -15,6 +22,10 @@ public class Project implements Serializable {
     private double objective;
     private double progress;
     private Date limit;
+    private double progressPercentage;
+
+    public Project() {
+    }
 
     public Project(int id, int adminId, String name, String description, double objective, Date limit) {
         this.id = id;
@@ -34,6 +45,10 @@ public class Project implements Serializable {
         this.objective = objective;
         this.limit = limit;
         this.progress = progress;
+        if(this.progress > 0)
+            this.progressPercentage = (this.progress * 100) /this.objective;
+        else
+            this.progressPercentage = 0;
     }
 
     public Project(int adminId, String name, String description, double objective, Date limit) {
@@ -99,11 +114,24 @@ public class Project implements Serializable {
 
     public void setProgress(double progress) {
         this.progress = progress;
+        if(this.progress > 0)
+            this.progressPercentage = (this.progress * 100) /this.objective;
+        else
+            this.progressPercentage = 0;
+    }
+
+    public double getProgressPercentage() {
+        return progressPercentage;
+    }
+
+    public void setProgressPercentage(double progressPercentage) {
+        this.progressPercentage = progressPercentage;
     }
 
     public boolean reatched(){
         return progress >= objective;
     }
+
 
     @Override
     public String toString() {
@@ -115,6 +143,7 @@ public class Project implements Serializable {
                 ", objective=" + objective +
                 ", progress=" + progress +
                 ", limit=" + limit +
+                ", progressPercentage=" + progressPercentage +
                 '}';
     }
 }

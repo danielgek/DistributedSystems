@@ -8,5 +8,6 @@
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
     <orderEntry type="module" module-name="RmiServer" />
+    <orderEntry type="module" module-name="TCPServer" />
   </component>
 </module>
