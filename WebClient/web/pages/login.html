@@ -1,0 +1,22 @@
+<div layout="column" layout-align="center center" layout-fill>
+    <md-card>
+        <md-toolbar class="toobar-top-borders " layout-padding layout-align="center start">
+            <span>Login</span>
+        </md-toolbar>
+        <md-progress-linear ng-show="loading" md-mode="indeterminate" class="md-whiteframe-z1" style="margin-top:-5px;"></md-progress-linear>
+        <md-card-content class="gray-background">
+
+            <md-input-container md-theme="inputs">
+                <label>Username</label>
+                <input type="text" ng-model="username" value="tradertest01">
+            </md-input-container>
+            <md-input-container md-theme="inputs">
+                <label>Password</label>
+                <input ng-model="password" type="password" value="password01">
+            </md-input-container>
+            <div layout="column" layout-align="center end">
+                <md-button ng-click="loginRequest();loading=true" class="md-raised md-primary">Login</md-button>
+            </div>
+        </md-card-content>
+    </md-card>
+</div>

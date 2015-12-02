@@ -1,5 +1,6 @@
 package models;
 
+import org.apache.struts2.json.annotations.JSON;
 import rmi.StorageServer;
 import rmi.StorageServerInterface;
 
@@ -54,11 +55,11 @@ public class User implements Serializable {
     public void setUsername(String username) {
         this.username = username;
     }
-
+    @JSON(serialize = false)
     public String getPassword() {
         return password;
     }
-
+    @JSON(serialize = false)
     public void setPassword(String password) {
         this.password = password;
     }
