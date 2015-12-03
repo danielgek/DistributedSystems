@@ -5,10 +5,29 @@
 
 <struts>
         <constant name="struts.devMode" value="true" />
+
          <package name="default" namespace="/" extends="json-default">
+                <result-types>
+                        <result-type name="json" class="org.apache.struts2.json.JSONResult" />
+                </result-types>
+                <interceptors>
+                    <interceptor name="json" class="org.apache.struts2.json.JSONInterceptor" />
+                </interceptors>
               <action name="login" class="com.danielgek.actions.LoginAction">
                	   <result name="success" type="json"  />
                	   <result name="login" type="json"  />
+               	   <interceptor-ref name="json" >
+               	        <param name="enableSMD">true</param>
+               	   </interceptor-ref>
+                   <interceptor-ref name="defaultStack" />
+              </action>
+              <action name="dashboard" class="com.danielgek.actions.DashAction">
+                   <result name="success" type="json"  />
+                   <result name="login" type="json"  />
+                   <interceptor-ref name="json" >
+                        <param name="enableSMD">true</param>
+                   </interceptor-ref>
+                   <interceptor-ref name="defaultStack" />
               </action>
          </package>
 </struts>

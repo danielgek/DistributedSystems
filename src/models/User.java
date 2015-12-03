@@ -60,6 +60,9 @@ public class User implements Serializable {
         return password;
     }
     @JSON(serialize = false)
+
+
+
     public void setPassword(String password) {
         this.password = password;
     }

@@ -5,3 +5,22 @@ body{
     width: 100%;
     height: 100%;
 }
+.background{
+	background-color:#EEEEEE;
+}
+
+md-tab-content {
+	background-color:#EEEEEE;
+}
+md-tabs md-ink-bar {
+	color: white !important;
+	background: #FFC206 !important;
+	height: 3px;
+	margin-bottom: -1px;
+}
+md-tabs .md-tab {
+  	color: rgba(255,255,255, 0.4) !important;
+}
+md-tabs .md-tab.md-active, md-tabs .md-tab.md-focused {
+    color: white!important;
+}

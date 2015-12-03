@@ -1,0 +1,79 @@
+<md-toolbar>
+    <div class="md-toolbar-tools">
+        <md-button class="md-icon-button" aria-label="Settings">
+            <md-icon md-svg-icon="img/icons/menu.svg"></md-icon>
+        </md-button>
+        <h2>
+            <span>Dashboard</span>
+        </h2>
+        <span flex></span>
+        <md-button class="md-icon-button" aria-label="More">
+            <md-icon md-svg-icon="img/icons/more_vert.svg"></md-icon>
+        </md-button>
+    </div>
+</md-toolbar>
+<md-content class="background">
+    <div>
+      <md-content>
+        <md-tabs class="md-primary" md-dynamic-height md-border-bottom>
+            <md-tab id="tab1">
+                <md-tab-label>All Projects</md-tab-label>
+                <md-tab-body layout>
+                    <md-grid-list md-cols-sm="1" md-cols-md="2" md-cols-gt-md="4" md-row-height="fit" md-gutter="12px" md-gutter-gt-sm="8px" >
+                        <md-grid-tile ng-repeat="project in projects">
+                            <md-card layout-padding>
+                                <md-card-content>
+                                    <h2 class="md-title">{{project.name}}</h2>
+                                    <p>{{project.description}}</p>
+                                    <p>{{project.limit}}</p>
+                                    <p>{{project.objective}}</p>
+                                    <p>{{project.progress}}</p>
+                                </md-card-content>
+                                <div class="md-actions" layout="row" layout-align="end center">
+                                    <md-button>View Details</md-button>
+                                </div>
+                            </md-card>
+                        </md-grid-tile>
+                    </md-grid-list>
+                    
+                </md-tab-body>
+            </md-tab>
+            <md-tab id="tab2">
+                <md-tab-label>Current Projects</md-tab-label>
+                <md-tab-body class="md-padding">
+                    <md-card ng-repeat="project in currentProjects">
+                        <md-card-content>
+                            <h2 class="md-title">{{project.name}}</h2>
+                            <p>{{project.description}}</p>
+                            <p>{{project.limit}}</p>
+                            <p>{{project.objective}}</p>
+                            <p>{{project.progress}}</p>
+                        </md-card-content>
+                        <div class="md-actions" layout="row" layout-align="end center">
+                            <md-button>View Details</md-button>
+                        </div>
+                    </md-card>
+                </md-tab-body>
+            </md-tab>
+            <md-tab id="tab3">
+                <md-tab-label>Old Projects</md-tab-label>
+                <md-tab-body class="md-padding">
+                    <md-card ng-repeat="project in currentProjects">
+                        <md-card-content>
+                            <h2 class="md-title">{{project.name}}</h2>
+                            <p>{{project.description}}</p>
+                            <p>{{project.limit}}</p>
+                            <p>{{project.objective}}</p>
+                            <p>{{project.progress}}</p>
+                        </md-card-content>
+                        <div class="md-actions" layout="row" layout-align="end center">
+                            <md-button>View Details</md-button>
+                        </div>
+                    </md-card>
+                </md-tab-body>
+            </md-tab>
+        </md-tabs>
+      </md-content>
+    </div>
+    
+</md-content>

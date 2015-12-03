@@ -4,8 +4,11 @@ import com.danielgek.models.UserRepository;
 import com.opensymphony.xwork2.ActionSupport;
 import com.opensymphony.xwork2.util.logging.Logger;
 import com.opensymphony.xwork2.util.logging.LoggerFactory;
+import models.Response;
 import models.User;
 import org.apache.struts2.interceptor.SessionAware;
+import org.apache.struts2.RequestUtils;
+
 import org.apache.struts2.json.annotations.JSON;
 
 import java.util.Map;
@@ -19,12 +22,15 @@ public class LoginAction extends ActionSupport implements SessionAware{
      * The model class that stores the message
      * to display in the view.
      */
+
+
     private UserRepository userRepository;
     private String password;
     private String username;
 
     private Map<String,Object> session;
     private User user;
+    private Response response;
 
 
 
@@ -44,10 +50,12 @@ public class LoginAction extends ActionSupport implements SessionAware{
         if(userRepository.authenticate(username,password)){
             session.put("user",userRepository.getUser());
             user = userRepository.getUser();
+            response = new Response(true,"LoggedIn!",user);
             return SUCCESS;
         }
 
 
+        response = new Response(false,"Username or password wrong!",user);
         return LOGIN;
     }
     @JSON(serialize=false)
@@ -76,8 +84,16 @@ public class LoginAction extends ActionSupport implements SessionAware{
         return username;
     }
 
-    public User getUser(){
+    /*public User getUser(){
         return this.user;
+    }*/
+
+    public Response getResponse() {
+        return response;
+    }
+
+    public void setResponse(Response response) {
+        this.response = response;
     }
 
     @Override
