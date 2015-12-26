@@ -9,25 +9,25 @@ public class Poll implements Serializable {
     private int id = -1;
     private String title;
     private String description;
-    private int idProject;
+    private int projectId;
     private String answer1;
     private String answer2;
 
 
 
-    public Poll(int id, String title, String description, int idProject, String answer1, String answer2) {
+    public Poll(int id, String title, String description, int projectId, String answer1, String answer2) {
         this.id = id;
         this.title = title;
         this.description = description;
-        this.idProject = idProject;
+        this.projectId = projectId;
         this.answer1 = answer1;
         this.answer2 = answer2;
     }
 
-    public Poll(String title, String description, int idProject, String answer1, String answer2) {
+    public Poll(String title, String description, int projectId, String answer1, String answer2) {
         this.title = title;
         this.description = description;
-        this.idProject = idProject;
+        this.projectId = projectId;
         this.answer1 = answer1;
         this.answer2 = answer2;
     }
@@ -56,12 +56,12 @@ public class Poll implements Serializable {
         this.description = description;
     }
 
-    public int getIdProject() {
-        return idProject;
+    public int getProjectId() {
+        return projectId;
     }
 
-    public void setIdProject(int idProject) {
-        this.idProject = idProject;
+    public void setProjectId(int projectId) {
+        this.projectId = projectId;
     }
 
     public String getAnswer1() {
@@ -86,7 +86,7 @@ public class Poll implements Serializable {
                 "id=" + id +
                 ", title='" + title + '\'' +
                 ", description='" + description + '\'' +
-                ", idProject=" + idProject +
+                ", projectId=" + projectId +
                 ", answer1='" + answer1 + '\'' +
                 ", answer2='" + answer2 + '\'' +
                 '}';

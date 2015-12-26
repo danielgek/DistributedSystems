@@ -9,19 +9,19 @@ public class Level implements Serializable {
     private int id;
     private double goal;
     private String description;
-    private int idProject;
+    private int projectId;
 
-    public Level(int id, double goal, String description, int idProject) {
+    public Level(int id, double goal, String description, int projectId) {
         this.id = id;
         this.goal = goal;
         this.description = description;
-        this.idProject = idProject;
+        this.projectId = projectId;
     }
 
-    public Level(double goal, String description, int idProject) {
+    public Level(double goal, String description, int projectId) {
         this.goal = goal;
         this.description = description;
-        this.idProject = idProject;
+        this.projectId = projectId;
     }
 
     public int getId() {
@@ -48,13 +48,28 @@ public class Level implements Serializable {
         this.description = description;
     }
 
-    public int getIdProject() {
-        return idProject;
+    public int getProjectId() {
+        return projectId;
     }
 
-    public void setIdProject(int idProject) {
-        this.idProject = idProject;
+    public void setProjectId(int projectId) {
+        this.projectId = projectId;
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        Level level = (Level) o;
+
+        if (Double.compare(level.getGoal(), getGoal()) != 0) return false;
+        if (getProjectId() != level.getProjectId()) return false;
+        return !(getDescription() != null ? !getDescription().equals(level.getDescription()) : level.getDescription() != null);
+
+    }
+
+
 
     @Override
     public String toString() {
@@ -62,7 +77,7 @@ public class Level implements Serializable {
                 "id=" + id +
                 ", goal=" + goal +
                 ", description='" + description + '\'' +
-                ", idProject=" + idProject +
+                ", projectId=" + projectId +
                 '}';
     }
 }
