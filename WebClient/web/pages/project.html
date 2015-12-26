@@ -1,0 +1,109 @@
+<md-toolbar class="md-tall-custom md-whiteframe-2dp">
+    <div class="md-toolbar-tools">
+        <md-button ui-sref="dashboard" class="md-icon-button" aria-label="Back">
+            <md-icon md-svg-icon="img/icons/arrow_back.svg"></md-icon>
+        </md-button>
+        <h2>
+            <span>Project</span>
+        </h2>
+        <span flex></span>
+        <md-button ng-if="user.id == project.adminId" ui-sref="edit-project({id : project.id })" class="md-icon-button" aria-label="Edit project">
+		    <md-icon md-svg-src="img/icons/edit.svg"></md-icon>
+		</md-button>
+		<md-button ng-click="removeProject()" ng-if="user.id == project.adminId" class="md-icon-button" aria-label="Delete project">
+		    <md-icon md-svg-src="img/icons/delete.svg"></md-icon>
+		</md-button>
+        <md-button class="md-icon-button" aria-label="More">
+            <md-icon md-svg-icon="img/icons/more_vert.svg"></md-icon>
+        </md-button>
+
+    </div>
+</md-toolbar>
+<div layout="row" class="project-card-holder">
+	<div flex="20" hide-md hide-sm></div>
+	<div class="project-card-inner" flex>
+		<md-card md-padding>
+			<md-card-content >
+			    <div>
+			    	<h1 class="md-display-3">{{ project.name }}</h1>
+			    	<p class="md-body-1">{{ project.description }}</p>
+			    	<p>{{ project.objective }} {{ project.limit }}</p>
+			    </div>
+			    <div style="margin-left: -15px;margin-right:-15px;" >
+			    	<md-list >
+				    	<md-subheader class="md-no-sticky">Rewards:</md-subheader>
+				    	<md-list-item class="md-2-line md-long-text" ng-repeat="reward in rewards" >
+					    		<p>{{ reward.description }}</p>
+					    		<p>{{ reward.value }} $</p>
+				  		</md-list-item>
+				  		<md-divider ></md-divider>
+				  		<md-list-item ng-if="rewards.length == 0" >
+				    		<p style="text-align: center">No rewards</p>
+				  		</md-list-item>
+				  		<md-divider ></md-divider>
+				  		
+						<!-- Polls -->
+				  		<md-subheader class="md-no-sticky">Polls:</md-subheader>
+				    	<md-list-item class="md-2-line md-long-text" ng-repeat="poll in polls" >
+					    	<div class="md-list-item-text" layout="column">
+						        <h3>{{ poll.title }}</h3>
+						        <h4>{{ poll.description }}</h4>
+						        <p>Answer 1: {{ poll.answer1 }}</p>
+					    		<p>Answer 2: {{ poll.answer2 }}</p>
+					        </div>
+				    		
+				  		</md-list-item>
+						<md-divider ></md-divider>
+				  		<md-list-item ng-if="polls.length == 0" >
+				    		<p style="text-align: center">No polls</p>
+				  		</md-list-item>
+				  		<md-divider ></md-divider>
+				  		
+						<!-- Levels -->
+				  		<md-subheader class="md-no-sticky">Levels:</md-subheader>
+				    	<md-list-item class="md-2-line md-long-text" ng-repeat="level in levels" >
+				    		<div class="md-list-item-text" layout="column">
+					    		<p>Description: {{ level.description }}</p>
+					    		<p>Goal: {{ level.goal }}</p>
+					    	</div>
+				    		
+				  		</md-list-item>
+				  		<md-divider ></md-divider>
+				  		<md-list-item ng-if="levels.length == 0" >
+				    		<p style="text-align: center">No levels</p>
+				  		</md-list-item>
+				    </md-list>
+			    </div>
+			</md-card-content>
+		</md-card>
+		<md-card md-padding>
+			<md-card-content md-padding>
+			    <div>
+			    	<h3 class="md-display-1">Messages</h3>
+			    </div>
+			    <div style="margin-left: -15px;margin-right:-15px;" >
+			    	<md-list >
+				    	<md-list-item ng-repeat="message in messages" >
+					    	<p>{{ message.message }}</p>
+				  		</md-list-item>
+				  		<md-divider ></md-divider>
+				  		<md-list-item ng-if="messages.length == 0" >
+				    		<p style="text-align: center">No messages yet!</p>
+				  		</md-list-item>
+				  		
+				    </md-list>
+				    <md-input-container flex>
+				        <label>Comment</label>
+				        <textarea ng-model="message.message" columns="1" md-maxlength="150"></textarea>
+				    </md-input-container>
+				    <md-button ng-click="sendMessage()" class="md-raised md-primary">Send</md-button>
+			    </div>
+			</md-card-content>
+		</md-card>
+	</div>
+	<div flex="20" hide-md hide-sm></div>
+</div>
+<md-button ng-click="showPledgeDialog()" class="md-fab save-project" aria-label="Pledge">
+    <md-icon md-svg-src="img/icons/money.svg"></md-icon>
+</md-button>
+	

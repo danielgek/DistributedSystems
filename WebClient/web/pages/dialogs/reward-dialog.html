@@ -1,0 +1,34 @@
+<md-dialog aria-label="Add Reward Dialog">
+	<md-toolbar class="dialog-toobar md-whiteframe-2dp">
+		Add Reward:
+	</md-toolbar>
+	<form name="rewardForm">
+		<md-dialog-content class="md-padding">
+		
+			<md-input-container>
+				<label>Reward Description</label>
+				<input required type="text" name="description" ng-model="description" >
+				<div ng-messages="rewardForm.description.$error">
+                    <div ng-message="required">Description is required.</div>
+                </div>
+			</md-input-container>
+		    <md-input-container>
+		        <label>Reward Value</label>
+		        <input required min="1" type="number" name="value" ng-model="value" >
+		        <div ng-messages="rewardForm.value.$error">
+                    <div ng-message="required">Value is required.</div>
+                    <div ng-message="min">Reward minimum value is 1.</div>
+                </div>
+		    </md-input-container>
+	    
+		</md-dialog-content>
+	</form>
+	<md-dialog-actions layout="row" layout-align="end center">
+		<md-button ng-click="closeDialog()" class="md-raised md-accent">
+			Cancel
+		</md-button>
+		<md-button ng-click="addReward(description,value)" ng-disabled="rewardForm.$invalid" class="md-raised md-accent">
+			Add
+		</md-button>
+	</md-dialog-actions>
+</md-dialog>

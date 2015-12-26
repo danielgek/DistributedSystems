@@ -1,0 +1,46 @@
+<md-dialog aria-label="Add Poll Dialog">
+	<md-toolbar class="dialog-toobar md-whiteframe-2dp">
+		Add Poll:
+	</md-toolbar>
+	<form name="pollForm">
+		<md-dialog-content class="md-padding">
+			<md-input-container>
+				<label>Poll Title</label>
+				<input required type="text" name="title" ng-model="title" >
+				<div ng-messages="pollForm.title.$error">
+                    <div ng-message="required">Title is required.</div>
+                </div>
+			</md-input-container>
+			<md-input-container>
+				<label>Poll Description</label>
+				<input required type="text" name="description" ng-model="description" >
+				<div ng-messages="pollForm.description.$error">
+                    <div ng-message="required">Description is required.</div>
+                </div>
+			</md-input-container>
+		    <md-input-container>
+		        <label>Poll Answer 1</label>
+		        <input required type="text" name="answer1" ng-model="answer1" >
+		        <div ng-messages="pollForm.answer1.$error">
+                    <div ng-message="required">Answer 1 is required.</div>
+                </div>
+		    </md-input-container>
+		    <md-input-container>
+		        <label>Poll Answer 2</label>
+		        <input required type="text" name="answer2" ng-model="answer2" >
+		        <div ng-messages="pollForm.answer2.$error">
+                    <div ng-message="required">Answer 2 is required.</div>
+                </div>
+		    </md-input-container>
+	    
+		</md-dialog-content>
+	</form>
+	<md-dialog-actions layout="row" layout-align="end center">
+		<md-button ng-click="closeDialog()" class="md-raised md-accent">
+			Cancel
+		</md-button>
+		<md-button ng-click="addPoll(title,description,answer1,answer2)" ng-disabled="pollForm.$invalid" class="md-raised md-accent">
+			Add
+		</md-button>
+	</md-dialog-actions>
+</md-dialog>

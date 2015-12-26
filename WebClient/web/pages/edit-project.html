@@ -4,7 +4,7 @@
             <md-icon md-svg-icon="img/icons/arrow_back.svg"></md-icon>
         </md-button>
         <h2>
-            <span>Add Project</span>
+            <span>Edit Project</span>
         </h2>
         <span flex></span>
         <md-button class="md-icon-button" aria-label="More">
@@ -25,13 +25,13 @@
 					    </md-input-container>
 					    <md-input-container>
 					        <label>Project Goal</label>
-					        <input type="number" ng-model="project.objective" >
+					        <input type="number" disabled="disabled" ng-model="project.objective" >
 					    </md-input-container>
 					    <md-input-container class="md-block">
 					        <label>Description</label>
 					        <textarea ng-model="project.description" columns="1" md-maxlength="500" rows="5"></textarea>
 					    </md-input-container>
-					    <md-datepicker ng-model="project.limit" md-placeholder="Project limit"></md-datepicker>
+					    <md-datepicker disabled="disabled" ng-model="project.limit" md-placeholder="Project limit"></md-datepicker>
 					</form>
 			    </div>
 			    <div style="margin-left: -15px;margin-right:-15px;" >
@@ -42,8 +42,8 @@
 					    		<p>Description: {{ reward.description }}</p>
 					    		<p>Value: {{ reward.value }}</p>
 					    	</div>
-				    		<md-button  title="Remove Reward"  aria-label="Remove Reward" class="md-icon-button" >
-					        	<md-icon  ng-click="removeReward(reward.id)" md-svg-src="img/icons/delete.svg"></md-icon>
+				    		<md-button  ng-click="removeReward(reward.id)" title="Remove Reward"  aria-label="Remove Reward" class="md-icon-button" >
+					        	<md-icon  md-svg-src="img/icons/delete.svg"></md-icon>
 					      	</md-button>
 				  		</md-list-item>
 				  		<md-divider ></md-divider>
@@ -53,8 +53,8 @@
 				  		<md-divider ></md-divider>
 				  		<md-list-item>
 				    		<p style="text-align: center">
-					    		<md-button  title="Add Reward"  aria-label="Add Reward" class="md-icon-button" >
-						        	<md-icon  ng-click="showAddRewardDialog($event)" md-svg-src="img/icons/add.svg"></md-icon>
+					    		<md-button ng-click="showAddRewardDialog($event)" title="Add Reward"  aria-label="Add Reward" class="md-icon-button" >
+						        	<md-icon md-svg-src="img/icons/add.svg"></md-icon>
 						      	</md-button>
 				    		</p>
 				  		</md-list-item>
@@ -67,9 +67,7 @@
 						        <p>Answer 1: {{ poll.answer1 }}</p>
 					    		<p>Answer 2: {{ poll.answer2 }}</p>
 					        </div>
-				    		<md-button  title="Remove Poll"  aria-label="Remove Poll" class="md-icon-button" >
-					        	<md-icon  ng-click="removePoll(poll.id)" md-svg-src="img/icons/delete.svg"></md-icon>
-					      	</md-button>
+				    		
 				  		</md-list-item>
 						<md-divider ></md-divider>
 				  		<md-list-item ng-if="polls.length == 0" >
@@ -90,9 +88,7 @@
 					    		<p>Description: {{ level.description }}</p>
 					    		<p>Goal: {{ level.goal }}</p>
 					    	</div>
-				    		<md-button  title="Remove Level" aria-label="Remove Level" class="md-icon-button" >
-					        	<md-icon  ng-click="removeLevel(level.id)" md-svg-src="img/icons/delete.svg"></md-icon>
-					      	</md-button>
+				    		
 				  		</md-list-item>
 				  		<md-divider ></md-divider>
 				  		<md-list-item ng-if="levels.length == 0" >

@@ -1,0 +1,34 @@
+<md-dialog aria-label="Add Level Dialog">
+	<md-toolbar class="dialog-toobar md-whiteframe-2dp">
+		Add Level:
+	</md-toolbar>
+	<form name="levelForm">
+		<md-dialog-content class="md-padding">
+		
+			<md-input-container>
+				<label>Level Description</label>
+				<input required type="text" name="description" ng-model="description" >
+				<div ng-messages="levelForm.description.$error">
+                    <div ng-message="required">Description is required.</div>
+                </div>
+			</md-input-container>
+		    <md-input-container>
+		        <label>Level Value</label>
+		        <input required min="1" type="number" name="goal" ng-model="goal" >
+		        <div ng-messages="levelForm.goal.$error">
+                    <div ng-message="required">Value is required.</div>
+                    <div ng-message="min">Level minimum goal is 1.</div>
+                </div>
+		    </md-input-container>
+	    
+		</md-dialog-content>
+	</form>
+	<md-dialog-actions layout="row" layout-align="end center">
+		<md-button ng-click="closeDialog()" class="md-raised md-accent">
+			Cancel
+		</md-button>
+		<md-button ng-click="addLevel(description, goal)" ng-disabled="levelForm.$invalid" class="md-raised md-accent">
+			Add
+		</md-button>
+	</md-dialog-actions>
+</md-dialog>

@@ -1,30 +1,32 @@
 <div layout="column" layout-align="center center" layout-fill>
     <md-card>
         <md-toolbar class="toobar-top-borders " layout-padding layout-align="center start">
-            <span>Login</span>
+            <span>Register</span>
         </md-toolbar>
         <md-progress-linear ng-show="loading" md-mode="indeterminate" class="md-whiteframe-z1" style="margin-top:-5px;"></md-progress-linear>
         <md-card-content>
-            <form name="loginForm">
+            <form name="registerForm">
                 <md-input-container>
                     <label>Username</label>
                     <input required type="text" name="username" ng-model="username" >
-                    <div ng-messages="loginForm.username.$error">
+                    <div ng-messages="registerForm.username.$error">
                         <div ng-message="required">Username is required.</div>
                     </div>
                 </md-input-container>
                 <md-input-container>
                     <label>Password</label>
                     <input required type="password" name="password" ng-model="password" >
-                    <div ng-messages="loginForm.password.$error">
+                    <div ng-messages="registerForm.password.$error">
                         <div ng-message="required">Password is required.</div>
                     </div>
                 </md-input-container>
             </form>
         </md-card-content>
         <md-card-actions layout="row" layout-align="end center">
-            <md-button class="md-raised md-accent" ui-sref="register">Register</md-button>
-            <md-button ng-click="loginRequest();loading=true" class="md-raised md-accent">Login</md-button>
+
+
+ 			<md-button ui-sref="register" class="md-raised md-accent">Cancel</md-button>
+            <md-button ng-click="registerRequest();loading=true" class="md-raised md-accent">Register</md-button>
         </md-card-actions>
     </md-card>
 </div>

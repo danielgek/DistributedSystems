@@ -1,0 +1,26 @@
+<md-dialog aria-label="Add Level Dialog">
+	<md-toolbar class="dialog-toobar md-whiteframe-2dp">
+		Pledge
+	</md-toolbar>
+	<form name="levelForm">
+		<md-dialog-content class="md-padding">
+		    <md-input-container>
+		        <label>Pledge Amount</label>
+		        <input required min="1" type="number" name="amount" ng-model="amount" >
+		        <div ng-messages="levelForm.goal.$error">
+                    <div ng-message="required">Amount is required.</div>
+                    <div ng-message="min">You have to pledge at least.</div>
+                </div>
+		    </md-input-container>
+	    
+		</md-dialog-content>
+	</form>
+	<md-dialog-actions layout="row" layout-align="end center">
+		<md-button ng-click="closeDialog()" class="md-raised md-accent">
+			Cancel
+		</md-button>
+		<md-button ng-click="pledge(amount)" ng-disabled="levelForm.$invalid" class="md-raised md-accent">
+			Pledge
+		</md-button>
+	</md-dialog-actions>
+</md-dialog>
