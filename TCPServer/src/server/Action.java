@@ -1,3 +1,5 @@
+package server;
+
 import java.io.Serializable;
 
 /**
@@ -61,7 +63,7 @@ public class Action implements Serializable {
 
     @Override
     public String toString() {
-        return "Action{" +
+        return "server.Action{" +
                 "action=" + this.getClass().getDeclaredFields()[action + 1].getName() +
                 ", object= " + (object == null ? "null" : object.toString()) +
                 '}';

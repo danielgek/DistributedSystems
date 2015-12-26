@@ -1,3 +1,4 @@
+package server;
 
 import Util.Debug;
 import models.*;
@@ -146,7 +147,7 @@ public class ClientHandler extends Thread {
 
             }
         } catch (ClassNotFoundException e) {
-            Debug.m("Error on ClientHandler ClassNotFoundException: " + e.getMessage());
+            Debug.m("Error on server.ClientHandler ClassNotFoundException: " + e.getMessage());
             e.printStackTrace();
             try {
                 out.writeObject(new Response(false, "Error on Conection! please try again"));
@@ -154,7 +155,7 @@ public class ClientHandler extends Thread {
                 e1.printStackTrace();
             }
         } catch (RemoteException e) {
-            Debug.m("Error on ClientHandler RemoteException: " + e.getMessage());
+            Debug.m("Error on server.ClientHandler RemoteException: " + e.getMessage());
             try {
                 out.writeObject(new Response(false, "Error on Conection! please try again!"));
             } catch (IOException e1) {
@@ -166,7 +167,7 @@ public class ClientHandler extends Thread {
             Debug.m(e.getMessage());
 
         } catch (EOFException e){
-            Debug.m("Error on ClientHandler IOException: problabli disconected");
+            Debug.m("Error on server.ClientHandler IOException: problabli disconected");
 
 
             //e.printStackTrace();
@@ -178,7 +179,7 @@ public class ClientHandler extends Thread {
             this.interrupt();
         } catch (IOException e) {
 
-            Debug.m("Error on ClientHandler IOException: problably disconected");
+            Debug.m("Error on server.ClientHandler IOException: problably disconected");
 
 
             //e.printStackTrace();

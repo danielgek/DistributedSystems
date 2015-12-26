@@ -1,9 +1,9 @@
+package server;
+
 import Util.Debug;
-import rmi.StorageServer;
 import rmi.StorageServerInterface;
 
 import java.net.MalformedURLException;
-import java.net.MulticastSocket;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.rmi.Naming;
@@ -92,7 +92,7 @@ public class TCPServer {
                 new ClientHandler(clientSocket,storageServer, this);
             }
         }catch(Exception e) {
-            Debug.m("Error listening clients on TCPServer: \n" + e.getMessage());
+            Debug.m("Error listening clients on server.TCPServer: \n" + e.getMessage());
         }
     }
 
@@ -130,7 +130,7 @@ public class TCPServer {
         int port = Integer.parseInt(args[3]);
 
 
-        /*BackupServerStatus  backupServerStatus = new BackupServerStatus( primaryServerAdress, primary);
+        /*server.BackupServerStatus  backupServerStatus = new server.BackupServerStatus( primaryServerAdress, primary);
 
         if(!primary){
             while(!backupServerStatus.isBackup()){
