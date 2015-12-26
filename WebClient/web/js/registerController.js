@@ -1,9 +1,8 @@
-fundingApp.controller('loginController', ['$scope', '$log', '$http', '$mdDialog', '$state', 'storageService', function($scope, $log, $http, $mdDialog, $state, storageService){
+fundingApp.controller('registerController', ['$scope', '$log', '$http', '$mdDialog', '$state', function($scope, $log, $http, $mdDialog, $state){
 
 
 
-    $scope.username = 'daniel';
-    $scope.password = 'daniel';
+    
 
     $scope.loading = false;
 
@@ -45,14 +44,12 @@ fundingApp.controller('loginController', ['$scope', '$log', '$http', '$mdDialog'
         };
 
 
-        $http.post('/login', $scope.loginData, {headers : $scope.headers}).
+        $http.post('http://localhost:8080/login', $scope.loginData, {headers : $scope.headers}).
             success(function(data, status, headers, config) {
                 $log.info(data);
                 $scope.loading = false;
-
                 if(data.response.success === true){
-                    storageService.user = data.response.object;
-                    storageService.WebSocket();
+                    
                     $state.go('dashboard');
                 }else{
                     $scope.password = '';
