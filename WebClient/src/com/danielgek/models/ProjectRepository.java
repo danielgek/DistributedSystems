@@ -1,5 +1,6 @@
 package com.danielgek.models;
 
+import models.Pledge;
 import models.Project;
 import models.Response;
 import rmi.StorageServerInterface;
@@ -62,5 +63,81 @@ public class ProjectRepository {
             e.printStackTrace();
         }
         return projects;
+    }
+
+    public Project newProject(Project project){
+        try {
+            Response response = storageServer.createProject(project);
+            if(response.isSuccess()){
+                return (Project) response.getObject();
+            }else{
+                return null;
+            }
+        } catch (RemoteException e) {
+            System.out.println(e);
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+    public Project getProject(int id){
+        try {
+            Response response = storageServer.getProject(id);
+            if(response.isSuccess()){
+                return (Project) response.getObject();
+            }else{
+                return null;
+            }
+        } catch (RemoteException e) {
+            System.out.println(e);
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+    public boolean removeProject(int id){
+        try {
+            Response response = storageServer.removeProject(id);
+            if(response.isSuccess()){
+                return true;
+            }else{
+                return false;
+            }
+        } catch (RemoteException e) {
+            System.out.println(e);
+            e.printStackTrace();
+            return false;
+        }
+    }
+
+    public boolean update(Project project) {
+        try {
+            Response response = storageServer.updateProject(project);
+            if(response.isSuccess())
+                return true;
+            else
+                return false;
+        } catch (RemoteException e) {
+
+            e.printStackTrace();
+        }
+        return false;
+    }
+
+    public Response pledge(Pledge pledge){
+        try {
+            Response response = storageServer.pledge(pledge);
+            if(response.isSuccess())
+                return response;
+            else{
+                System.out.println(response.getMessage());
+                return response;
+            }
+
+        } catch (RemoteException e) {
+
+            e.printStackTrace();
+        }
+        return null;
     }
 }

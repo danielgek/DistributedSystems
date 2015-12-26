@@ -1,24 +1,27 @@
 package com.danielgek.models;
 
-import models.Project;
+/**
+ * Created by danielgek on 08/12/15.
+ */
+
 import models.Response;
-import models.User;
 import rmi.StorageServerInterface;
 
 import java.net.MalformedURLException;
 import java.rmi.Naming;
 import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
+import java.util.ArrayList;
 
-/**
- * Created by danielgek on 29/11/15.
- */
-public class UserRepository {
+import models.Message;
 
+public class MessageRepository {
     private StorageServerInterface storageServer;
-    private User user;
+    private ArrayList<Message> messages;
+    private Message message;
 
-    public UserRepository() {
+
+    public MessageRepository() {
         try {
             storageServer = (StorageServerInterface) Naming.lookup("//127.0.0.1:25055/storageServer");
         } catch (NotBoundException |MalformedURLException |RemoteException e ) {
@@ -26,13 +29,11 @@ public class UserRepository {
         }
     }
 
-    public boolean authenticate(String username, String password){
-
+    public boolean save(Message message){
         try {
-            Response response = storageServer.login(new User(username,password));
+            Response response = storageServer.sendMessage(message);
             if (response.isSuccess()){
-                this.user = (User) response.getObject();
-
+                this.message = (Message) response.getObject();
                 return true;
             }else{
                 return false;
@@ -46,28 +47,19 @@ public class UserRepository {
 
     }
 
-    public User getUser(int id) {
+
+
+
+    public ArrayList<Message> getMessages(int id) {
         try {
-            Response response = storageServer.getUser(id);
-            if (response.isSuccess()){
-                User user = (User) response.getObject();
-
-                return user;
-            }else{
-                return null;
-            }
-
+            Response response = storageServer.getMessagesByProject(id);
+            System.out.println(response);
+            return (ArrayList<Message>) response.getObject();
         } catch (RemoteException e) {
             e.printStackTrace();
-            return null;
         }
+        return null;
     }
 
-    public User getUser() {
-        return user;
-    }
 
-    public void setUser(User user) {
-        this.user = user;
-    }
 }
