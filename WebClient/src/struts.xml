@@ -1,33 +1,71 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE struts PUBLIC
-		"-//Apache Software Foundation//DTD Struts Configuration 2.5//EN"
-		"http://struts.apache.org/dtds/struts-2.5.dtd">
+        "-//Apache Software Foundation//DTD Struts Configuration 2.3//EN"
+        "http://struts.apache.org/dtds/struts-2.3.dtd">
 
 <struts>
-        <constant name="struts.devMode" value="true" />
+    <constant name="struts.action.excludePattern" value="/ws/.*"/>
+    <constant name="struts.devMode" value="true" />
+    <package name="default" namespace="/" extends="json-default">
+        <result-types>
+            <result-type name="json" class="org.apache.struts2.json.JSONResult" />
+        </result-types>
+        <interceptors>
+            <interceptor name="json" class="org.apache.struts2.json.JSONInterceptor" />
+        </interceptors>
+        <action name="login" class="com.danielgek.actions.LoginAction">
+            <result name="success" type="json" />
+            <result name="login" type="json" />
+            <interceptor-ref name="json">
+                <param name="enableSMD">true</param>
+            </interceptor-ref>
+            <interceptor-ref name="defaultStack" />
+        </action>
+        <action name="dashboard" class="com.danielgek.actions.DashAction">
+            <result name="success" type="json" />
+            <result name="login" type="json" />
+            <interceptor-ref name="json">
+                <param name="enableSMD">true</param>
+            </interceptor-ref>
+            <interceptor-ref name="defaultStack" />
+        </action>
+        <action name="createProject" class="com.danielgek.actions.CreateProjectAction">
+            <result name="success" type="json" />
+            <result name="login" type="json" />
+            <interceptor-ref name="json">
+                <param name="enableSMD">true</param>
+            </interceptor-ref>
+            <interceptor-ref name="defaultStack" />
+        </action>
+        <action name="getProject" class="com.danielgek.actions.GetProjectAction">
+            <result name="success" type="json" />
+            <result name="login" type="json" />
+            <interceptor-ref name="json">
+                <param name="enableSMD">true</param>
+            </interceptor-ref>
+            <interceptor-ref name="defaultStack" />
+        </action>
+        <action name="editProject" class="com.danielgek.actions.EditProjectAction">
+            <result name="success" type="json" />
+            <result name="login" type="json" />
+            <interceptor-ref name="json">
+                <param name="enableSMD">true</param>
+            </interceptor-ref>
+            <interceptor-ref name="defaultStack" />
+        </action>
+        <action name="pledge" class="com.danielgek.actions.PledgeAction">
+            <result name="success" type="json" />
+            <result name="login" type="json" />
+            <interceptor-ref name="json"/>
 
-         <package name="default" namespace="/" extends="json-default">
-                <result-types>
-                        <result-type name="json" class="org.apache.struts2.json.JSONResult" />
-                </result-types>
-                <interceptors>
-                    <interceptor name="json" class="org.apache.struts2.json.JSONInterceptor" />
-                </interceptors>
-              <action name="login" class="com.danielgek.actions.LoginAction">
-               	   <result name="success" type="json"  />
-               	   <result name="login" type="json"  />
-               	   <interceptor-ref name="json" >
-               	        <param name="enableSMD">true</param>
-               	   </interceptor-ref>
-                   <interceptor-ref name="defaultStack" />
-              </action>
-              <action name="dashboard" class="com.danielgek.actions.DashAction">
-                   <result name="success" type="json"  />
-                   <result name="login" type="json"  />
-                   <interceptor-ref name="json" >
-                        <param name="enableSMD">true</param>
-                   </interceptor-ref>
-                   <interceptor-ref name="defaultStack" />
-              </action>
-         </package>
+        </action>
+        <action name="message" class="com.danielgek.actions.MessageAction">
+            <result name="success" type="json" />
+            <interceptor-ref name="json"/>
+        </action>
+        <action name="cancelProject" class="com.danielgek.actions.CancelProjectAction">
+            <result name="success" type="json" />
+            <interceptor-ref name="json"/>
+        </action>
+    </package>
 </struts>

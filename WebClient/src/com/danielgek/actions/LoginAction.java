@@ -34,23 +34,18 @@ public class LoginAction extends ActionSupport implements SessionAware{
 
 
 
-
-
-    /*
-     * Creates the MessageStore model object and
-     * returns success.  The MessageStore model
-     * object will be available to the view.
-     * (non-Javadoc)
-     * @see com.opensymphony.xwork2.ActionSupport#execute()
-     */
     public String execute() throws Exception {
 
         userRepository = new UserRepository();
+
+        System.out.println(username);
+        System.out.println(password);
 
         if(userRepository.authenticate(username,password)){
             session.put("user",userRepository.getUser());
             user = userRepository.getUser();
             response = new Response(true,"LoggedIn!",user);
+            session.put("user", user);
             return SUCCESS;
         }
 
@@ -58,14 +53,7 @@ public class LoginAction extends ActionSupport implements SessionAware{
         response = new Response(false,"Username or password wrong!",user);
         return LOGIN;
     }
-    @JSON(serialize=false)
-    public UserRepository getUserRepository() {
-        return userRepository;
-    }
-    @JSON(serialize=false)
-    public void setUserRepository(UserRepository userRepository) {
-        this.userRepository = userRepository;
-    }
+
     @JSON(serialize=false)
     public void setPassword(String password) {
         this.password = password;
