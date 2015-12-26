@@ -11,6 +11,8 @@ public class Message implements Serializable {
     private String message;
     private int sender;
     private int receiver;
+    private int projectId;
+
     public Message() {
     }
 
@@ -25,6 +27,12 @@ public class Message implements Serializable {
         this.message = message;
         this.sender = sender;
         this.receiver = receiver;
+    }
+    public Message(String message, int sender, int receiver, int projectId) {
+        this.message = message;
+        this.sender = sender;
+        this.receiver = receiver;
+        this.projectId = projectId;
     }
 
     public int getId() {
@@ -57,6 +65,14 @@ public class Message implements Serializable {
 
     public void setReceiver(int receiver) {
         this.receiver = receiver;
+    }
+
+    public int getProjectId() {
+        return projectId;
+    }
+
+    public void setProjectId(int projectId) {
+        this.projectId = projectId;
     }
 
     @Override
