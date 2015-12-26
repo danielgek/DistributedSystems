@@ -3,19 +3,15 @@ import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.net.SocketTimeoutException;
 import java.net.UnknownHostException;
-import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Date;
 //import java.time.format.
-import java.util.Scanner;
-import java.util.concurrent.ExecutionException;
 
 import Util.Debug;
 import Util.Util;
 import models.*;
+import server.Action;
 
 
 /**
@@ -426,7 +422,6 @@ public class Client {
                     }else{
                         System.out.println("* * * Rewards: ");
                         for (int i = 0; i < rewards.size(); i++) {
-
                             System.out.println("* * Description: " + rewards.get(i).getDescription());
                             System.out.println("* * Value: " + rewards.get(i).getValue());
                             System.out.println("* * ");
