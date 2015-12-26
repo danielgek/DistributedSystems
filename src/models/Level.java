@@ -2,6 +2,7 @@ package models;
 
 import java.io.Serializable;
 
+
 /**
  * Created by danielgek on 12/10/15.
  */
@@ -10,6 +11,8 @@ public class Level implements Serializable {
     private double goal;
     private String description;
     private int projectId;
+
+    public Level() {}
 
     public Level(int id, double goal, String description, int projectId) {
         this.id = id;

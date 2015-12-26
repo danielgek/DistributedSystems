@@ -12,6 +12,9 @@ public class Pledge implements Serializable{
     private int userId;
     private double amount;
 
+    public Pledge() {
+    }
+
     public Pledge(int projectId, int userId, double amount) {
         this.projectId = projectId;
         this.userId = userId;

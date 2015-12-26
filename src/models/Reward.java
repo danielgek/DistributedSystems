@@ -12,6 +12,8 @@ public class Reward implements Serializable {
     private String description;
     private double value;
 
+    public Reward(){}
+
     public Reward(int id, int projectId, String description, double value) {
         this.id = id;
         this.projectId = projectId;

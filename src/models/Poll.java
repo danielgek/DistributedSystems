@@ -13,7 +13,7 @@ public class Poll implements Serializable {
     private String answer1;
     private String answer2;
 
-
+    public Poll(){}
 
     public Poll(int id, String title, String description, int projectId, String answer1, String answer2) {
         this.id = id;
