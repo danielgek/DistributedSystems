@@ -60,6 +60,20 @@ public class Reward implements Serializable {
     }
 
     @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        Reward reward = (Reward) o;
+
+        if (Double.compare(reward.getValue(), getValue()) != 0) return false;
+        return !(getDescription() != null ? !getDescription().equals(reward.getDescription()) : reward.getDescription() != null);
+
+    }
+
+
+
+    @Override
     public String toString() {
         return "Reward{" +
                 "id=" + id +

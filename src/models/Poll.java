@@ -80,6 +80,25 @@ public class Poll implements Serializable {
         this.answer2 = answer2;
     }
 
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        Poll poll = (Poll) o;
+
+        if (getProjectId() != poll.getProjectId()) return false;
+        if (getTitle() != null ? !getTitle().equals(poll.getTitle()) : poll.getTitle() != null) return false;
+        if (getDescription() != null ? !getDescription().equals(poll.getDescription()) : poll.getDescription() != null)
+            return false;
+        if (getAnswer1() != null ? !getAnswer1().equals(poll.getAnswer1()) : poll.getAnswer1() != null) return false;
+        return !(getAnswer2() != null ? !getAnswer2().equals(poll.getAnswer2()) : poll.getAnswer2() != null);
+
+    }
+
+
+
     @Override
     public String toString() {
         return "Poll{" +
