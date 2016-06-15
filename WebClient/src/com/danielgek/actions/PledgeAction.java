@@ -1,12 +1,11 @@
 package com.danielgek.actions;
 
-import com.danielgek.models.ProjectRepository;
+import com.danielgek.repositories.ProjectRepository;
 import com.danielgek.ws.WebSocketServer;
 import com.opensymphony.xwork2.ActionSupport;
 import models.Pledge;
 import models.Project;
 import models.Response;
-import models.User;
 import org.apache.struts2.interceptor.SessionAware;
 
 import javax.websocket.Session;

@@ -3,6 +3,8 @@ fundingApp.controller('dashboardController', ['$scope', '$log', '$http', '$mdDia
 	$scope.currentProjects = [];
 	$scope.oldProjects = [];
     $scope.loadingProjects = false;
+    $scope.username = storageService.user.username;
+    $scope.balance = storageService.user.balance;
 	$scope.getProjects = function(){
         if(!$scope.loadingProjects){
             $scope.loadingProjects = true;
@@ -18,10 +20,12 @@ fundingApp.controller('dashboardController', ['$scope', '$log', '$http', '$mdDia
 
                     }
                 }else{
+                    console.log("badum");
                     $state.go('login');
                 }
                 $scope.loadingProjects = false;
             }).error(function(data, status, headers, config){
+                console.log("badum2");
                 $state.go('login');
                 $scope.loadingProjects = false;
             });

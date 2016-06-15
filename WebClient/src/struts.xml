@@ -67,5 +67,22 @@
             <result name="success" type="json" />
             <interceptor-ref name="json"/>
         </action>
+        <action name="tumblrResult" class="com.danielgek.actions.TumblrResultAction">
+            <result name="loggedIn" >/index.jsp</result>
+            <result name="joinUser" >/join-user.jsp</result>
+            <result name="index" type="redirect">
+                <param name="location">/</param>
+            </result>
+        </action>
+        <action name="tumblrGetAuth" class="com.danielgek.actions.TumblrGetAuthAction">
+            <result name="success" type="json" />
+            <interceptor-ref name="json"/>
+        </action>
+        <action name="joinTumblr" class="com.danielgek.actions.JoinTumblrAction">
+            <result name="dashboard">/index.jsp</result>
+            <result name="index">
+                <param name="location">/</param>
+            </result>
+        </action>
     </package>
 </struts>

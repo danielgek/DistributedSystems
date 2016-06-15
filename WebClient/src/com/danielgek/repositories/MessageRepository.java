@@ -1,4 +1,4 @@
-package com.danielgek.models;
+package com.danielgek.repositories;
 
 /**
  * Created by danielgek on 08/12/15.

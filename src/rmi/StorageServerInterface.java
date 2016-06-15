@@ -1,5 +1,7 @@
 package rmi;
 
+import com.github.scribejava.core.model.Token;
+import com.github.scribejava.core.model.Verifier;
 import models.*;
 
 import java.rmi.Remote;
@@ -33,4 +35,9 @@ public interface StorageServerInterface extends Remote{
     Response removeReward(int id) throws RemoteException;
     Response sendMessage(Message message) throws RemoteException;
     Response getMessagesByProject(int projectId) throws RemoteException;
+    Response updateProject(Project project) throws RemoteException;
+    Response getAuthUrl() throws RemoteException;
+    Response tumblrLogin( String verifier) throws RemoteException;
+    Response tumblrJoin(String username, User user) throws RemoteException;
+
 }

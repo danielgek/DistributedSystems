@@ -1,4 +1,4 @@
-<md-toolbar >
+
     <div class="md-toolbar-tools">
         <md-button class="md-icon-button" aria-label="Menu">
             <md-icon md-svg-icon="img/icons/menu.svg"></md-icon>
@@ -7,8 +7,10 @@
             <span>Dashboard</span>
         </h2>
         <span flex></span>
-        <md-button class="md-icon-button" aria-label="More">
-            <md-icon md-svg-icon="img/icons/more_vert.svg"></md-icon>
+        <span>{{ username }}</span>
+        <span>Balance {{ balance }}</span>
+        <md-button class="md-icon-button" aria-label="Logout">
+            <md-icon md-svg-icon="img/icons/exit.svg"></md-icon>
         </md-button>
     </div>
 </md-toolbar>

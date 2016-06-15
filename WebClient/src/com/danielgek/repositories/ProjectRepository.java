@@ -1,4 +1,4 @@
-package com.danielgek.models;
+package com.danielgek.repositories;
 
 import models.Pledge;
 import models.Project;

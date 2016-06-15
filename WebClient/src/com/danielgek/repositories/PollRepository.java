@@ -1,6 +1,6 @@
-package com.danielgek.models;
+package com.danielgek.repositories;
 
-import models.Level;
+import models.Poll;
 import models.Response;
 import rmi.StorageServerInterface;
 
@@ -13,11 +13,13 @@ import java.util.ArrayList;
 /**
  * Created by danielgek on 08/12/15.
  */
-public class LevelRepository {
+public class PollRepository {
     private StorageServerInterface storageServer;
-    private Level level;
-    private ArrayList<Level> levels;
-    public LevelRepository() {
+    private ArrayList<Poll> polls;
+    private Poll poll;
+
+
+    public PollRepository() {
         try {
             storageServer = (StorageServerInterface) Naming.lookup("//127.0.0.1:25055/storageServer");
         } catch (NotBoundException |MalformedURLException |RemoteException e ) {
@@ -25,12 +27,11 @@ public class LevelRepository {
         }
     }
 
-    public boolean save(Level level){
-
+    public boolean save(Poll poll){
         try {
-            Response response = storageServer.addLevel(level);
+            Response response = storageServer.addPoll(poll);
             if (response.isSuccess()){
-                this.level = (Level) response.getObject();
+                this.poll = (Poll) response.getObject();
                 return true;
             }else{
                 return false;
@@ -43,13 +44,12 @@ public class LevelRepository {
 
 
     }
-
-    public boolean save(ArrayList<Level> levels){
-
+    public boolean save(ArrayList<Poll> polls){
         try {
-            for (int i = 0; i < levels.size(); i++) {
-                Response response = storageServer.addLevel(levels.get(i));
+            for (int i = 0; i < polls.size(); i++) {
+                Response response = storageServer.addPoll(polls.get(i));
                 if (response.isSuccess()){
+                    this.polls = (ArrayList<Poll>) response.getObject();
                     return true;
                 }else{
                     return false;
@@ -62,35 +62,29 @@ public class LevelRepository {
             e.printStackTrace();
             return false;
         }
-
-
     }
 
-    public boolean delete(int id){
-
-        /*
-            NEEDS TO BE IMPLEMENTED ON RMI SIDE
-
-            Response response = storageServer.removeLevel(id);
-            if (response.isSuccess()){
-                return true;
-            }else{
-                return false;
-            }
-        */
-
-        return true;
 
 
-    }
-
-    public ArrayList<Level> getLevels(int id) {
+    public ArrayList<Poll> getPolls(int id) {
         try {
-            Response response = storageServer.getLevels(id);
-            return (ArrayList<Level>) response.getObject();
+            Response response = storageServer.getPolls(id);
+            return (ArrayList<Poll>) response.getObject();
         } catch (RemoteException e) {
             e.printStackTrace();
         }
         return null;
+    }
+
+    public void setPolls(ArrayList<Poll> polls) {
+        this.polls = polls;
+    }
+
+    public Poll getPoll() {
+        return poll;
+    }
+
+    public void setPoll(Poll poll) {
+        this.poll = poll;
     }
 }

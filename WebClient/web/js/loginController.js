@@ -1,6 +1,4 @@
-fundingApp.controller('loginController', ['$scope', '$log', '$http', '$mdDialog', '$state', 'storageService', function($scope, $log, $http, $mdDialog, $state, storageService){
-
-
+fundingApp.controller('loginController', ['$scope', '$log', '$http', '$mdDialog', '$state', 'storageService', '$sce', function($scope, $log, $http, $mdDialog, $state, storageService,$sce){
 
     $scope.username = 'daniel';
     $scope.password = 'daniel';
@@ -51,7 +49,9 @@ fundingApp.controller('loginController', ['$scope', '$log', '$http', '$mdDialog'
                 $scope.loading = false;
 
                 if(data.response.success === true){
+                    console.log("here");
                     storageService.user = data.response.object;
+                    storageService.logged = true;
                     storageService.WebSocket();
                     $state.go('dashboard');
                 }else{
@@ -75,6 +75,28 @@ fundingApp.controller('loginController', ['$scope', '$log', '$http', '$mdDialog'
                 }else {
                     $scope.showWrongCardentialsAlert(data.response.message);
                 }
+            });
+    };
+
+    $scope.loginTumblrRequest = function(){
+        if($scope.loading == true){
+            return;
+        }
+        //$scope.loadingTumblr = true;
+        $http.post('/tumblrGetAuth', {} , {headers : $scope.headers}).
+            success(function(data, status, headers, config) {
+                $log.info(data);
+                $scope.loading = false;
+
+                if(data.response.success === true){
+                    window.location=data.response.object;
+                }else{
+                    $mdToast.show($mdToast.simple().content("Something worng going on !!"));
+                }
+
+            }).
+            error(function(data, status, headers, config) {
+                $mdToast.show($mdToast.simple().content("Error on Connection!!"));
             });
     };
 

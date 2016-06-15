@@ -1,4 +1,4 @@
-var fundingApp = angular.module('fundingApp', ['ui.router','ngMaterial', 'ngMessages']);
+var fundingApp = angular.module('fundingApp', ['ui.router','ngMaterial', 'ngMessages','ngSanitize'  ]);
 fundingApp.config(function($stateProvider, $urlRouterProvider, $mdThemingProvider) {
 
 
@@ -43,8 +43,17 @@ fundingApp.service('storageService', function($http, $log, $rootScope, $mdToast,
     storageService = this;
     storageService.logged = false;
 
+    if(window.tumblrUser != undefined){
+        //that's a tumblr user so lets add user to the service and proceed to dashboard
+        console.log("here2");
+        storageService.user = window.user;
+        storageService.WebSocket();
+        $state.go('dashboard'); 
+    }// no need fo else because it's a normal user
+
     $rootScope.$on('$locationChangeSuccess', function(event, toState, toParams, fromState, fromParams) {
-        if(storageService.logged === true){
+        if(storageService.logged === false ){
+            console.log("here 3");
             $state.go('login');
         }
     });
@@ -73,6 +82,7 @@ fundingApp.service('storageService', function($http, $log, $rootScope, $mdToast,
                 var toast = null;
                 
                 console.log(evt);
+
                 if(evt.data.response.message === "pledged"){
                     toast = $mdToast.simple()
                     .content('New Pledge!')

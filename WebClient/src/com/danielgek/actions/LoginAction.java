@@ -1,18 +1,14 @@
 package com.danielgek.actions;
 
-import com.danielgek.models.UserRepository;
+import com.danielgek.repositories.UserRepository;
 import com.opensymphony.xwork2.ActionSupport;
-import com.opensymphony.xwork2.util.logging.Logger;
-import com.opensymphony.xwork2.util.logging.LoggerFactory;
 import models.Response;
 import models.User;
 import org.apache.struts2.interceptor.SessionAware;
-import org.apache.struts2.RequestUtils;
 
 import org.apache.struts2.json.annotations.JSON;
 
 import java.util.Map;
-import java.util.logging.LogManager;
 
 /**
  * Created by danielgek on 28/11/15.
@@ -42,7 +38,6 @@ public class LoginAction extends ActionSupport implements SessionAware{
         System.out.println(password);
 
         if(userRepository.authenticate(username,password)){
-            session.put("user",userRepository.getUser());
             user = userRepository.getUser();
             response = new Response(true,"LoggedIn!",user);
             session.put("user", user);
@@ -50,7 +45,7 @@ public class LoginAction extends ActionSupport implements SessionAware{
         }
 
 
-        response = new Response(false,"Username or password wrong!",user);
+        response = new Response(false,"Username or password wrong!");
         return LOGIN;
     }
 

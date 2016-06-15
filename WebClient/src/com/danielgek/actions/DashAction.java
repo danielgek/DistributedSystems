@@ -1,6 +1,6 @@
 package com.danielgek.actions;
 
-import com.danielgek.models.ProjectRepository;
+import com.danielgek.repositories.ProjectRepository;
 import com.opensymphony.xwork2.ActionSupport;
 import models.Project;
 import models.Response;

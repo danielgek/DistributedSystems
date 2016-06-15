@@ -3,8 +3,12 @@ package rmi;
 
 
 import Util.Debug;
-import Util.Util;
+import com.github.scribejava.core.model.Token;
+import com.github.scribejava.core.model.Verifier;
+import com.tumblr.jumblr.JumblrClient;
+import com.tumblr.jumblr.exceptions.JumblrException;
 import models.*;
+import rest.TumblrConnection;
 
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
@@ -25,6 +29,9 @@ public class StorageServer extends UnicastRemoteObject implements StorageServerI
     private Connection connection;
     private Statement statement = null;
     private ResultSet rs = null;
+    private TumblrConnection tumblrConnection;
+    private static final String API_APP_KEY = "72bZRYrRpFSVWvq0T8pyP7daDz8rdmMamTovQyakvHcKEhHLyB";
+    private static final String API_APP_SECRET = "6tDVLgNsYNbicOzn1gaMPcoIId7FNLNQFOhaJzamtUamha1dKx";
 
     public StorageServer() throws RemoteException {
         super();
@@ -110,6 +117,9 @@ public class StorageServer extends UnicastRemoteObject implements StorageServerI
     public Response login(User user) throws RemoteException {
         Debug.m("Starting Login: " + user.toString());
         try {
+
+
+
 
             rs = statement.executeQuery("SELECT * FROM users WHERE user = '" + user.getUsername() + "' AND pass = '" + user.getPassword() + "';");
             rs.first();
@@ -219,6 +229,7 @@ public class StorageServer extends UnicastRemoteObject implements StorageServerI
 
     @Override
     public Response getProject(int id) throws RemoteException {
+        Debug.m("getProject(" + id + ")");
         try {
             rs = statement.executeQuery("SELECT * FROM projects WHERE id = " + id + " AND soft_deleted = 0;");
 
@@ -522,7 +533,7 @@ public class StorageServer extends UnicastRemoteObject implements StorageServerI
 
             statement.executeUpdate("INSERT INTO levels ( id_project, description, goal)" +
                     "VALUES" +
-                    "(" + level.getIdProject() + ", '" +
+                    "(" + level.getProjectId() + ", '" +
                     level.getDescription() + "', " +
                     level.getGoal() + ");", Statement.RETURN_GENERATED_KEYS);
 
@@ -583,7 +594,7 @@ public class StorageServer extends UnicastRemoteObject implements StorageServerI
                     "VALUES" +
                     "('" + poll.getTitle() + "', '" +
                     poll.getDescription() + "', " +
-                    poll.getIdProject() + ", '" +
+                    poll.getProjectId() + ", '" +
                     poll.getAnswer1() + "', '" +
                     poll.getAnswer1() + "');", Statement.RETURN_GENERATED_KEYS);
 
@@ -765,7 +776,7 @@ public class StorageServer extends UnicastRemoteObject implements StorageServerI
     public Response sendMessage(Message message) throws RemoteException {
 
         try {
-            statement.executeUpdate("INSERT INTO messages(message, sender, receiver) VALUES ('" + message.getMessage() + "', " + message.getSender() + ", " + message.getReceiver() + ");");
+            statement.executeUpdate("INSERT INTO messages(message, sender, receiver, project) VALUES ('" + message.getMessage() + "', " + message.getSender() + ", " + message.getReceiver() + ", " + message.getProjectId() + ");");
             return new Response(true, "Message sended!");
         } catch (SQLException e) {
             Debug.m(e.getMessage());
@@ -778,7 +789,7 @@ public class StorageServer extends UnicastRemoteObject implements StorageServerI
     @Override
     public Response getMessagesByProject(int id) throws RemoteException {
         try {
-            rs = statement.executeQuery("SELECT * FROM messages WHERE receiver = " +id);
+            rs = statement.executeQuery("SELECT * FROM messages WHERE project = " +id);
             ArrayList<Message> messages = new ArrayList<>();
 
             while (rs.next()){
@@ -797,6 +808,18 @@ public class StorageServer extends UnicastRemoteObject implements StorageServerI
         }
     }
 
+    @Override
+    public Response updateProject(Project project) throws RemoteException {
+        try {
+            statement.executeUpdate("UPDATE projects SET description='" + project.getDescription() + "', title='" + project.getName() + "' WHERE id= " + project.getId() + "; ");
+            return new Response(true, "Updated");
+
+        } catch (SQLException e) {
+            Debug.m(e.getMessage());
+            e.printStackTrace();
+            return new Response(false, "Error getting Messages!");
+        }
+    }
 
     @Override
     protected void finalize() throws Throwable {
@@ -817,5 +840,96 @@ public class StorageServer extends UnicastRemoteObject implements StorageServerI
 
             statement = null;
         }
+    }
+
+
+    @Override
+    public Response getAuthUrl() throws RemoteException {
+        tumblrConnection =  new TumblrConnection();
+
+        return new Response(true,"Auth url", tumblrConnection.getAuthorizationUrl());
+    }
+
+    @Override
+    public Response tumblrLogin(String verifier) throws RemoteException {
+
+
+
+        Token accessToken = tumblrConnection.getAccessToken(new Verifier(verifier));
+
+        try {
+
+            JumblrClient client = new JumblrClient(API_APP_KEY,API_APP_SECRET,accessToken.getToken(), accessToken.getSecret());
+
+            Response response = null;
+            rs = statement.executeQuery("SELECT * FROM tumblr_user WHERE name = '" + client.user().getName() + "';");
+            if(rs.next()){ // se nao esta vazio
+                rs.first();// busca o primeiro
+                if(client.user().getName().equals(rs.getString("name")) && (rs.getInt("user_id") != 0)){
+                    Response resp = getUser(rs.getInt("user_id"));
+
+                    response = new Response(true, client.user().getName(), resp.getObject());
+
+
+                }else if(rs.getInt("user_id") == 0 ){
+                    response = new Response(false,"not associated", client.user().getName());
+                }
+                statement.executeUpdate("UPDATE tumblr_user SET api_user_token = '" + accessToken.getToken() + "', api_user_secret = '" + accessToken.getSecret() + "' WHERE name = '" + client.user().getName() + "';");
+            }else{
+                statement.executeUpdate("INSERT INTO tumblr_user (name,api_user_token, api_user_secret)  VALUES ('" + client.user().getName() + "', '" + accessToken.getToken() +  "','" +  accessToken.getSecret() + "')");
+                response = new Response(true, "registered",client.user().getName() );
+
+            }
+            //cleanSql(rs, statement);
+
+            return response;
+
+
+        }catch (JumblrException e){
+            System.out.println(e.getMessage());
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return new Response(false,"boa cena");
+    }
+
+    @Override
+    public Response tumblrJoin(String username, User user) throws RemoteException {
+
+
+        try {
+            rs = statement.executeQuery("SELECT * FROM users WHERE user = '" + user.getUsername() + "' AND pass = '" + user.getPassword() + "';");
+            rs.first();
+
+            if(user.getUsername().equals(rs.getString("user"))  && user.getPassword().equals(rs.getString("pass"))){
+
+                user.setBalance(rs.getDouble("balance"));
+                user.setId(rs.getInt("id"));
+                rs = statement.executeQuery("SELECT * FROM tumblr_user WHERE name = '" + username + "';");
+                if(rs.first()){
+
+                    statement.executeUpdate("UPDATE tumblr_user SET user_id = " + user.getId() + " WHERE name = '" + username + "';");
+                    return new Response(true, "Joined Users susseccfully", user);
+                }else{
+
+                    return new Response(false, "tumblr user dont exist!");
+                }
+            }else if (user != null){
+                //you ha a user but its not authenticated successfully
+                return new Response(false, "User cardentials wrong! ");
+            }else{
+                //no user but creating one !!
+                statement.executeUpdate("INSERT INTO users (user,pass,balance) VALUES ('" + username + "', '' , 100)", Statement.RETURN_GENERATED_KEYS);
+                rs = statement.getGeneratedKeys();
+                int id = rs.getInt("GENERATED_KEY");
+                User user1 = new User(id,username,"",100);
+                return new Response(true, username , user1);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return new Response(false,"unkown error" + e.getMessage());
+        }
+
     }
 }

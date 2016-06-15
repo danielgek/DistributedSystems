@@ -1,7 +1,7 @@
-package com.danielgek.models;
+package com.danielgek.repositories;
 
+import models.Level;
 import models.Response;
-import models.Reward;
 import rmi.StorageServerInterface;
 
 import java.net.MalformedURLException;
@@ -13,12 +13,11 @@ import java.util.ArrayList;
 /**
  * Created by danielgek on 08/12/15.
  */
-public class RewardRepository {
+public class LevelRepository {
     private StorageServerInterface storageServer;
-    private Reward reward;
-    private ArrayList<Reward> rewards;
-
-    public RewardRepository() {
+    private Level level;
+    private ArrayList<Level> levels;
+    public LevelRepository() {
         try {
             storageServer = (StorageServerInterface) Naming.lookup("//127.0.0.1:25055/storageServer");
         } catch (NotBoundException |MalformedURLException |RemoteException e ) {
@@ -26,12 +25,12 @@ public class RewardRepository {
         }
     }
 
-    public boolean save(Reward reward){
+    public boolean save(Level level){
 
         try {
-            Response response = storageServer.addReward(reward);
+            Response response = storageServer.addLevel(level);
             if (response.isSuccess()){
-                this.reward = (Reward) response.getObject();
+                this.level = (Level) response.getObject();
                 return true;
             }else{
                 return false;
@@ -45,13 +44,12 @@ public class RewardRepository {
 
     }
 
-    public boolean save(ArrayList<Reward> rewards){
+    public boolean save(ArrayList<Level> levels){
 
         try {
-            for (int i = 0; i < rewards.size(); i++) {
-                Response response = storageServer.addReward(rewards.get(i));
+            for (int i = 0; i < levels.size(); i++) {
+                Response response = storageServer.addLevel(levels.get(i));
                 if (response.isSuccess()){
-                    //this.reward = (Reward) response.getObject();
                     return true;
                 }else{
                     return false;
@@ -70,50 +68,29 @@ public class RewardRepository {
 
     public boolean delete(int id){
 
-        try {
-            Response response = storageServer.removeReward(id);
+        /*
+            NEEDS TO BE IMPLEMENTED ON RMI SIDE
+
+            Response response = storageServer.removeLevel(id);
             if (response.isSuccess()){
                 return true;
             }else{
                 return false;
             }
+        */
 
-        } catch (RemoteException e) {
-            e.printStackTrace();
-            return false;
-        }
+        return true;
 
 
     }
 
-    public Reward getReward() {
-        return reward;
-    }
-
-    public void setReward(Reward reward) {
-        this.reward = reward;
-    }
-
-    public ArrayList<Reward> getRewards() {
-        return rewards;
-    }
-
-    public ArrayList<Reward> getRewards(int id) {
+    public ArrayList<Level> getLevels(int id) {
         try {
-            Response response = storageServer.getRewards(id);
-            if (response.isSuccess()){
-                return (ArrayList<Reward>) response.getObject();
-            }else{
-                return null;
-            }
-
+            Response response = storageServer.getLevels(id);
+            return (ArrayList<Level>) response.getObject();
         } catch (RemoteException e) {
             e.printStackTrace();
-            return null;
         }
-    }
-
-    public void setRewards(ArrayList<Reward> rewards) {
-        this.rewards = rewards;
+        return null;
     }
 }

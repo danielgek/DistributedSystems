@@ -25,6 +25,10 @@
         <md-card-actions layout="row" layout-align="end center">
             <md-button class="md-raised md-accent" ui-sref="register">Register</md-button>
             <md-button ng-click="loginRequest();loading=true" class="md-raised md-accent">Login</md-button>
+            <md-button ng-click="loginTumblrRequest();loading=true" class="md-raised md-accent">Tumblr</md-button>
         </md-card-actions>
     </md-card>
+    <div class="tumblr-overlay" ng-if="loadingTumblr">
+        <iframe ng-src="{{tumblrIframe}}" sandbox="allow-same-origin allow-scripts" align="middle" width="1000" height="800" frameborder="0"></iframe>
+    </div>
 </div>

@@ -1,6 +1,5 @@
-package com.danielgek.models;
+package com.danielgek.repositories;
 
-import models.Project;
 import models.Response;
 import models.User;
 import rmi.StorageServerInterface;
@@ -60,6 +59,22 @@ public class UserRepository {
         } catch (RemoteException e) {
             e.printStackTrace();
             return null;
+        }
+    }
+
+    public boolean joinTumblr(String tumblrUsername){
+        try {
+            Response response = storageServer.tumblrJoin(tumblrUsername,user);
+            if(response.isSuccess()){
+                return true;
+            }else{
+                System.out.println(response.getMessage());
+                return false;
+            }
+        } catch (RemoteException e) {
+            e.printStackTrace();
+            return false;
+
         }
     }
 

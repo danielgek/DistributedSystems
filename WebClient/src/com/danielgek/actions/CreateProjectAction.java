@@ -1,11 +1,13 @@
 package com.danielgek.actions;
 
-import com.danielgek.models.ProjectRepository;
+import com.danielgek.repositories.LevelRepository;
+import com.danielgek.repositories.PollRepository;
+import com.danielgek.repositories.ProjectRepository;
+import com.danielgek.repositories.RewardRepository;
 import com.opensymphony.xwork2.ActionSupport;
 import models.*;
 import org.apache.struts2.interceptor.SessionAware;
 
-import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -25,9 +27,17 @@ public class CreateProjectAction extends ActionSupport implements SessionAware {
 
     @Override
     public String execute() throws Exception {
-        this.user = (User) session.get("user");
+        //this.user = (User) session.get("user");
         ProjectRepository projectRepository = new ProjectRepository();
         this.project = projectRepository.newProject(this.project);
+        RewardRepository rewardRepository = new RewardRepository();
+        if(rewardRepository.save(rewards)){
+            System.out.println("error inserting polls");
+        }
+        LevelRepository levelRepository = new LevelRepository();
+        levelRepository.save(levels);
+        PollRepository pollRepository = new PollRepository();
+        pollRepository.save(polls);
         if(this.project != null ){
             response = new Response(true, "Created!");
         }else{

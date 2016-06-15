@@ -1,9 +1,9 @@
 package com.danielgek.actions;
 
-import com.danielgek.models.LevelRepository;
-import com.danielgek.models.PollRepository;
-import com.danielgek.models.ProjectRepository;
-import com.danielgek.models.RewardRepository;
+import com.danielgek.repositories.LevelRepository;
+import com.danielgek.repositories.PollRepository;
+import com.danielgek.repositories.ProjectRepository;
+import com.danielgek.repositories.RewardRepository;
 import com.opensymphony.xwork2.ActionSupport;
 
 import models.*;

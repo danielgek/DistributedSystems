@@ -1,0 +1,25 @@
+{
+  "name": "web",
+  "homepage": "https://github.com/danielgek/DistributedSystems",
+  "authors": [
+    "danielgek <danielgek@gmail.com>"
+  ],
+  "description": "",
+  "main": "index.htmk",
+  "moduleType": [],
+  "license": "MIT",
+  "private": true,
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "angular-messages": "~1.4.8",
+    "angular-material": "~0.11.4",
+    "angular-sanitize": "~1.4.8",
+    "angular-ui-router": "~0.2.15"
+  }
+}

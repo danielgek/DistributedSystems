@@ -1,16 +1,13 @@
 package com.danielgek.actions;
 
-import com.danielgek.models.MessageRepository;
-import com.danielgek.models.ProjectRepository;
-import com.danielgek.models.UserRepository;
+import com.danielgek.repositories.MessageRepository;
+import com.danielgek.repositories.ProjectRepository;
 import com.danielgek.ws.WebSocketServer;
 import com.opensymphony.xwork2.ActionSupport;
 import models.Message;
 import models.Project;
 import models.Response;
-import models.User;
 import org.apache.struts2.interceptor.SessionAware;
-import server.Action;
 
 import javax.websocket.Session;
 import java.util.HashMap;

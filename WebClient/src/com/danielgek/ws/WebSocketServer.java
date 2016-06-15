@@ -3,19 +3,11 @@ package com.danielgek.ws;
 /**
  * Created by danielgek on 17/12/15.
  */
-import com.danielgek.models.UserRepository;
-import com.google.gson.Gson;
-import models.Response;
-import models.User;
-import server.Action;
 
 import javax.websocket.*;
 import javax.websocket.server.PathParam;
 import javax.websocket.server.ServerEndpoint;
-import java.io.IOException;
 import java.util.HashMap;
-import java.util.Set;
-
 
 
 @ServerEndpoint(

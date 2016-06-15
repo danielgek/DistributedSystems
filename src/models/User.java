@@ -59,9 +59,6 @@ public class User implements Serializable {
     public String getPassword() {
         return password;
     }
-    @JSON(serialize = false)
-
-
 
     public void setPassword(String password) {
         this.password = password;

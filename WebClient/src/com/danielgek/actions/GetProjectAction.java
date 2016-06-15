@@ -1,11 +1,10 @@
 package com.danielgek.actions;
 
-import com.danielgek.models.*;
+import com.danielgek.repositories.*;
 import com.opensymphony.xwork2.ActionSupport;
 import models.*;
 import org.apache.struts2.interceptor.SessionAware;
 
-import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Map;
 
